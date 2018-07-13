@@ -3,30 +3,33 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class TeleOp_Library  extends LinearOpMode {
 
-    private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftRearDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightRearDrive = null;
-    private DcMotor RightLiftMotor = null;
-    private DcMotor LeftLiftMotor = null;
-    private DcMotor RightIntakeMotor = null;
-    private DcMotor LeftIntakeMotor = null;
-    private Servo rightFlip = null;
-    private Servo leftFlip = null;
-    private CRServo PITA_1 = null;
-    private CRServo PITA_2 = null;
-    private CRServo relicReel = null;
-    private Servo ColorArmTurn = null;
-    private Servo ColorSensorArm = null;
-    private Servo glyphStop = null;
-    private Servo relicPivot = null;
-    private Servo relicClaw = null;
+    public ElapsedTime runtime = new ElapsedTime();
+    public DcMotor leftFrontDrive = null;
+    public DcMotor leftRearDrive = null;
+    public DcMotor rightFrontDrive = null;
+    public DcMotor rightRearDrive = null;
+    public DcMotor RightLiftMotor = null;
+    public DcMotor LeftLiftMotor = null;
+    public DcMotor RightIntakeMotor = null;
+    public DcMotor LeftIntakeMotor = null;
+    public Servo rightFlip = null;
+    public Servo leftFlip = null;
+    public CRServo PITA_1 = null;
+    public CRServo PITA_2 = null;
+    public CRServo relicReel = null;
+    public Servo ColorArmTurn = null;
+    public Servo ColorSensorArm = null;
+    public Servo glyphStop = null;
+    public Servo relicPivot = null;
+    public Servo relicClaw = null;
+
+    HardwareMap hardwareMap       =  null;
 
     @Override
     public void runOpMode() {
@@ -35,6 +38,16 @@ public class TeleOp_Library  extends LinearOpMode {
 
 
         // set references for config
+
+        //relicPivot.setPosition(relicPivotPosition);
+
+        // Wait for the game to start (driver presses PL
+    }
+    public void init(HardwareMap ahwMap) {
+        // Save reference to Hardware map
+        hardwareMap  = ahwMap;
+
+        // Define and Initialize Motors
         leftFrontDrive = hardwareMap.get(DcMotor.class, "Left_FM");
         leftRearDrive = hardwareMap.get(DcMotor.class, "Left_RM");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "Right_FM");
@@ -98,49 +111,38 @@ public class TeleOp_Library  extends LinearOpMode {
         rightFlip.setPosition(rightFlipPosition);
         leftFlip.setPosition(leftFlipPosition);
         glyphStop.setPosition(glyphStopPosition);
-        //relicPivot.setPosition(relicPivotPosition);
-
-        // Wait for the game to start (driver presses PL
     }
-    public void runIntake() {
-        if (gamepad1.right_bumper) {
+    public void runIntakeForward() {
             RightIntakeMotor.setPower(0.8);
             LeftIntakeMotor.setPower(0.8);
-        }
-        if (gamepad1.left_bumper) {
+    }
+    public void stopIntake() {
             RightIntakeMotor.setPower(0);
             LeftIntakeMotor.setPower(0);
-        }
-        if (gamepad1.dpad_down) {
+    }
+    public void runIntakeHalf() {
             RightIntakeMotor.setPower(0.6);
             LeftIntakeMotor.setPower(0.6);
-        }
-        if (gamepad1.dpad_up) {
+    }
+    public void runIntakeBackward() {
             RightIntakeMotor.setPower(-0.55);
             LeftIntakeMotor.setPower(-0.55);
-        }
     }
-    public void relicClaw() {
-        if (gamepad2.left_bumper) {//closed
+    public void relicClawClose() {//closed
             relicClaw.setPosition(1.0);
-        }
-        if (gamepad2.right_bumper) {//open
+    }
+    public void relicClawOpen() {//open
             relicClaw.setPosition(0.3);
-
-        }
     }
-    public void pivotRelic() {
-        if (gamepad2.dpad_down) {//down
+    public void pivotRelicDown() {//down
             relicPivot.setPosition(0.225);
-        }
-        if (gamepad2.dpad_up) {//up
-            relicPivot.setPosition(0.75);
-        }
     }
-    public void deployRelic() {
-        if (gamepad2.y) {//deployment
+    public void pivotRelicUp() {//up
+            relicPivot.setPosition(0.75);
+
+    }
+    public void deployRelic() {//deployment
             relic_Deployment();
-        }
     }
     public void runRelicReel() {
         if (-gamepad2.left_stick_y > 0.4 || -gamepad2.left_stick_y < -0.4) {
@@ -151,64 +153,39 @@ public class TeleOp_Library  extends LinearOpMode {
             relicReel.setPower(0);
         }
     }
-    // if(gamepad1.dpad_left){//back
-    //     relicReel.setPower(0.6);
-    // }
-    // if(gamepad1.dpad_right){//out
-    //     relicReel.setPower(-0.8);
-    // }
-    // if(gamepad1.y){//stopped
-    //     relicReel.setPower(0);
-    // }
-    public void flipperFlatwithStop() {
-        if (gamepad2.b) {//flat
+    public void flipperFlatwithStop() {//flat
             glyphStop.setPosition(1.0);
             sleep(350);
             glyphStop.setPosition(0.9);
             sleep(200);
             leftFlip.setPosition(0.15);
             rightFlip.setPosition(0.85);
-        }
     }
     public void lifterDown() {
-        if (gamepad2.a) {// lifter down
             rightLift(10);
             leftLift(10);
-        }
     }
     public void lifterUp() {
-        if (gamepad2.x && leftFlip.getPosition() >= 0.15) {//lifter up
             glyphStop.setPosition(0.85);
             sleep(350);
             rightLift(3500);
             leftLift(3500);
-        }
     }
     public void flipperDump() {
-        if (gamepad1.b && leftFlip.getPosition() >= 0.15) {
             glyphStop.setPosition(0.85);
             sleep(250);
             leftFlip.setPosition(0.7);
             rightFlip.setPosition(0.3);
-            // ColorArmTurn.setPosition(0.88);
-        }
     }
-    // if(gamepad1.right_bumper){
-    // //   jewelKnockRight(250, 0.34);
-    // }
     public void flipperFlat() {
-        if (gamepad1.x) {
             leftFlip.setPosition(0.15);
             rightFlip.setPosition(0.85);
-        }
     }
     public void flipperDown() {
-        if (gamepad1.a && LeftLiftMotor.getCurrentPosition() < 20) {
             leftFlip.setPosition(0.0);
             rightFlip.setPosition(1.0);
             sleep(350);
             glyphStop.setPosition(0.3);
-        }
     }
     public void driveAndStrafe() {
         if (gamepad1.left_trigger > 0.2) {
@@ -230,13 +207,6 @@ public class TeleOp_Library  extends LinearOpMode {
             leftRearDrive.setPower(-gamepad1.left_stick_y);
         }
     }
-
-    //   jewelKnockLeft(250, 0.78);
-    // }if(gamepad1.y){
-    // //   ColorSensorArm.setPosition(0.76);
-    // }if(gamepad1.dpad_down){
-    // //   ColorSensorArm.setPosition(0.2);
-    // }
     public void telemetry(){
         telemetry.addLine("Right Lift Motor: " + RightLiftMotor.getCurrentPosition());
         telemetry.addLine("Left Lift Motor: " + LeftLiftMotor.getCurrentPosition());
@@ -286,22 +256,6 @@ public class TeleOp_Library  extends LinearOpMode {
                 // RightLiftMotor.setPower(0.5);
                 LeftLiftMotor.setPower(1.0);
             }
-        }
-    }
-    void jewelKnockRight(int sleepPerTurn, double ArmTurnValue){
-        double colorArmTurnPosition = 0.62;
-        while(ColorArmTurn.getPosition() > ArmTurnValue){
-            colorArmTurnPosition -= 0.02;
-            ColorArmTurn.setPosition(colorArmTurnPosition);
-            sleep(sleepPerTurn);
-        }
-    }
-    void jewelKnockLeft(int sleepPerTurn, double ArmTurnValue){
-        double colorArmTurnPosition = 0.62;
-        while(ColorArmTurn.getPosition() < ArmTurnValue){
-            colorArmTurnPosition += 0.02;
-            ColorArmTurn.setPosition(colorArmTurnPosition);
-            sleep(sleepPerTurn);
         }
     }
     public void relic_Deployment(){
