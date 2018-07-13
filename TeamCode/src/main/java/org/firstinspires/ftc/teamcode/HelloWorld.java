@@ -68,6 +68,13 @@ public class HelloWorld extends LinearOpMode {
             if (gamepad2.x && teleOpLibrary.leftFlip.getPosition() >= 0.15) {
                 teleOpLibrary.lifterUp();
             }
+            if (gamepad1.left_trigger > 0.2) {
+                teleOpLibrary.strafeLeft(gamepad1.left_trigger);
+            } if (gamepad1.right_trigger > 0.2) {
+                teleOpLibrary.strafeRight(gamepad1.right_trigger);
+            } else {
+               teleOpLibrary.driveForward(gamepad1.left_stick_y, gamepad1.right_stick_y);
+            }
 //            //teleOpLibrary.telemetry();
 //            //This is a test of Git
 //            //Another test

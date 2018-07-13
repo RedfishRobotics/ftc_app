@@ -187,26 +187,25 @@ public class TeleOp_Library  extends LinearOpMode {
             sleep(350);
             glyphStop.setPosition(0.3);
     }
-    public void driveAndStrafe() {
-        if (gamepad1.left_trigger > 0.2) {
+
+        public void strafeLeft(double power) {
             // set the motors to strafe to the left
-            leftFrontDrive.setPower(gamepad1.left_trigger);
-            leftRearDrive.setPower(-gamepad1.left_trigger);
-            rightFrontDrive.setPower(-gamepad1.left_trigger);
-            rightRearDrive.setPower(gamepad1.left_trigger);
-        } else if (gamepad1.right_trigger > 0.2) {
+            leftFrontDrive.setPower(power);
+            leftRearDrive.setPower(-power);
+            rightFrontDrive.setPower(-power);
+            rightRearDrive.setPower(power);
+        } public void strafeRight(double power){
             // // set the motors to strafe to the right
-            leftFrontDrive.setPower(-gamepad1.right_trigger);
-            leftRearDrive.setPower(gamepad1.right_trigger);
-            rightFrontDrive.setPower(gamepad1.right_trigger);
-            rightRearDrive.setPower(-gamepad1.right_trigger);
-        } else {
-            rightFrontDrive.setPower(-gamepad1.right_stick_y);
-            rightRearDrive.setPower(-gamepad1.right_stick_y);
-            leftFrontDrive.setPower(-gamepad1.left_stick_y);
-            leftRearDrive.setPower(-gamepad1.left_stick_y);
+            leftFrontDrive.setPower(-power);
+            leftRearDrive.setPower(power);
+            rightFrontDrive.setPower(power);
+            rightRearDrive.setPower(-power);
+        }public void driveForward(double leftPower, double rightPower) {
+            rightFrontDrive.setPower(-rightPower);
+            rightRearDrive.setPower(-rightPower);
+            leftFrontDrive.setPower(-leftPower);
+            leftRearDrive.setPower(-leftPower);
         }
-    }
     public void telemetry(){
         telemetry.addLine("Right Lift Motor: " + RightLiftMotor.getCurrentPosition());
         telemetry.addLine("Left Lift Motor: " + LeftLiftMotor.getCurrentPosition());
