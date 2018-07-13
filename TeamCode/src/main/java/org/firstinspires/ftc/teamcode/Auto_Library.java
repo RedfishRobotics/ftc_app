@@ -349,10 +349,10 @@ public class Auto_Library extends LinearOpMode {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            leftFrontDrive.setPower(Math.abs(speed));
-            leftRearDrive.setPower(Math.abs(speed));
-            rightFrontDrive.setPower(Math.abs(speed));
-            rightRearDrive.setPower(Math.abs(speed));
+            leftFrontDrive.setPower(speed);
+            leftRearDrive.setPower(speed);
+            rightFrontDrive.setPower(speed);
+            rightRearDrive.setPower(speed);
 
             //While the motors and OpMode is running, return telemetry on the motors
             while (opModeIsActive() &&
@@ -406,10 +406,10 @@ public class Auto_Library extends LinearOpMode {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            leftFrontDrive.setPower(Math.abs(speed));
-            leftRearDrive.setPower(Math.abs(speed));
-            rightFrontDrive.setPower(Math.abs(speed));
-            rightRearDrive.setPower(Math.abs(speed));
+            leftFrontDrive.setPower(speed);
+            leftRearDrive.setPower(speed);
+            rightFrontDrive.setPower(speed);
+            rightRearDrive.setPower(speed);
 
             //While the motors and OpMode is running, return telemetry on the motors
             while (opModeIsActive() &&
@@ -463,10 +463,10 @@ public class Auto_Library extends LinearOpMode {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            leftFrontDrive.setPower(Math.abs(speed));
-            leftRearDrive.setPower(Math.abs(speed));
-            rightFrontDrive.setPower(Math.abs(speed));
-            rightRearDrive.setPower(Math.abs(speed));
+            leftFrontDrive.setPower(speed);
+            leftRearDrive.setPower(speed);
+            rightFrontDrive.setPower(speed);
+            rightRearDrive.setPower(speed);
 
 
             //While the motors and OpMode is running, return telemetry on the motors
@@ -536,5 +536,41 @@ public class Auto_Library extends LinearOpMode {
         sleep(2500);
         PITA_1.setPower(0);
         PITA_2.setPower(0);
+    }
+    public void flipperFlatwithStop() {//flat
+        glyphStop.setPosition(1.0);
+        sleep(350);
+        glyphStop.setPosition(0.9);
+        sleep(200);
+        leftFlip.setPosition(0.15);
+        rightFlip.setPosition(0.85);
+    }
+    public void flipperDump() {
+        glyphStop.setPosition(0.85);
+        sleep(250);
+        leftFlip.setPosition(0.7);
+        rightFlip.setPosition(0.3);
+    }
+    public void flipperDown() {
+        leftFlip.setPosition(0.0);
+        rightFlip.setPosition(1.0);
+        sleep(350);
+        glyphStop.setPosition(0.3);
+    }
+    public void runIntakeForward() {
+        RightIntakeMotor.setPower(0.8);
+        LeftIntakeMotor.setPower(0.8);
+    }
+    public void stopIntake() {
+        RightIntakeMotor.setPower(0);
+        LeftIntakeMotor.setPower(0);
+    }
+    public void runIntakeHalf() {
+        RightIntakeMotor.setPower(0.6);
+        LeftIntakeMotor.setPower(0.6);
+    }
+    public void runIntakeBackward() {
+        RightIntakeMotor.setPower(-0.55);
+        LeftIntakeMotor.setPower(-0.55);
     }
 }

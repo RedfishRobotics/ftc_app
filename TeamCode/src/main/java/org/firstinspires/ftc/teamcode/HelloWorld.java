@@ -1,27 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name="Library Test", group="Linear Opmode")
 
 public class HelloWorld extends LinearOpMode {
 
-    Auto_Library autoLibrary = new Auto_Library();
     TeleOp_Library teleOpLibrary = new TeleOp_Library();
-
 
     @Override
     public void runOpMode() {
-        //autoLibrary.init(hardwareMap);
         teleOpLibrary.init(hardwareMap);
         waitForStart();
-//            autoLibrary.encoderDrive(0.5, 25, 25, 5);
-//            autoLibrary.rightFrontDrive.setPower(0.5);
-//            sleep(1000);
-//            autoLibrary.rightFrontDrive.setPower(0.0);
         while (opModeIsActive()) {
             if (gamepad1.right_bumper) {
                 teleOpLibrary.runIntakeForward();
