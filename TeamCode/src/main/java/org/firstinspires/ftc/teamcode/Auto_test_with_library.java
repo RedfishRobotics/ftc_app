@@ -24,7 +24,7 @@ public class Auto_test_with_library extends LinearOpMode {
         composeTelemetry();
         telemetry.update();
         waitForStart();
-        gyroTurn(0.5, 180, 0.011);
+        gyroTurn(0.5, 270, 0.011);
 //        encoderStrafeLeft(0.75, 5, 5, 5);
 //        sleep(1000);
 //        encoderStrafeRight(0.75, 5, 5, 5);
