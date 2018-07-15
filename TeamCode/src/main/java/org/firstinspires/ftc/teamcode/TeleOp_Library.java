@@ -112,6 +112,16 @@ public class TeleOp_Library  extends LinearOpMode {
         leftFlip.setPosition(leftFlipPosition);
         glyphStop.setPosition(glyphStopPosition);
     }
+    public void aracadeDrive(){
+        double drive;
+        double turn;
+        drive = -gamepad1.left_stick_y;
+        turn  =  gamepad1.right_stick_x;
+        rightFrontDrive.setPower(drive - turn);
+        rightRearDrive.setPower(drive + turn);
+        leftFrontDrive.setPower(drive + turn);
+        leftRearDrive.setPower(drive - turn);
+    }
     public void runIntakeForward() {
             RightIntakeMotor.setPower(0.8);
             LeftIntakeMotor.setPower(0.8);
