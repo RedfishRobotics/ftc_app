@@ -5,10 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.Locale;
 
@@ -16,21 +21,46 @@ import java.util.Locale;
 
 public class Auto_test_with_library extends LinearOpMode {
 
+    VuforiaLocalizer vuforia;
     Auto_Library autoLibrary = new Auto_Library();
+
 
     @Override
     public void runOpMode(){
         autoLibrary.init(hardwareMap);
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parametersVuforia = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        parametersVuforia.vuforiaLicenseKey = "AeyEUJr/////AAABmeFmvlzTdkEAiH3nHjERdd+Llh9YjOwGt7MJzlc6lwgtipxMyv3XcDmgJ9xt4hP+jxTG0U9/ryXj5p9dCnKDxdKUk0eXb7+916/0BpGO5Oo3sIu/wj56lSatbA6e/vHUHtawRO3XodseNo8YN3yQLPlEYDh6NuRP+m3559sMhYaJJnFdnieUEtgHV/Bjiv1P3wNy5dGDX541b+fBOiXX1xIq+Bt/bZ/c8dRZweH/56c8pwxszEZ3dLBr9e6IMqZ1q31B4dE1az8QzF3vHzmDHLwVu1Nw5noOeN3g7QEbgseLuUISxl8EvSHzcwumkAszmMaO+W0d10dMbgeuQnZgjInLfI/qhkVn22jewMn3whu3";
+        parametersVuforia.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT  ;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parametersVuforia);
+
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+
         composeTelemetry();
         telemetry.update();
         waitForStart();
         while(opModeIsActive()) {
-//          autoLibrary.VuMarkRead();
-//          sleep(10000);
-//          autoLibrary.VuMarkRead();
-//          sleep(10000);
-//          autoLibrary.VuMarkRead();
-//          sleep(10000);
+            relicTrackables.activate();
+                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+                if (vuMark.equals(RelicRecoveryVuMark.CENTER)){
+                    telemetry.addLine("Center");
+                    telemetry.update();
+                }
+                else if (vuMark.equals(RelicRecoveryVuMark.LEFT)){
+                    telemetry.addLine("Left");
+                    telemetry.update();
+                }
+                else if (vuMark.equals(RelicRecoveryVuMark.RIGHT)){
+                    telemetry.addLine("Right");
+                    telemetry.update();
+                }
+                else {
+                    telemetry.addLine("Default");
+                    telemetry.update();
+                }
 //            gyroTurn(0.5, 270, 0.011);
 //            sleep(1000);
 //        encoderStrafeLeft(0.75, 5, 5, 5);
