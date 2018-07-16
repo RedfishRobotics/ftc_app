@@ -24,8 +24,15 @@ public class Auto_test_with_library extends LinearOpMode {
         composeTelemetry();
         telemetry.update();
         waitForStart();
-        gyroTurn(0.5, 270, 0.011);
-        sleep(1000);
+        while(opModeIsActive()) {
+//          autoLibrary.VuMarkRead();
+//          sleep(10000);
+//          autoLibrary.VuMarkRead();
+//          sleep(10000);
+//          autoLibrary.VuMarkRead();
+//          sleep(10000);
+//            gyroTurn(0.5, 270, 0.011);
+//            sleep(1000);
 //        encoderStrafeLeft(0.75, 5, 5, 5);
 //        sleep(1000);
 //        encoderStrafeRight(0.75, 5, 5, 5);
@@ -41,6 +48,7 @@ public class Auto_test_with_library extends LinearOpMode {
 //        autoLibrary.flipperDown();
 //        sleep(1000);
 //        encoderDrive(0.75, 5, 5, 5);
+        }
     }
     public void gyroTurn (  double speed, double angle, double coefficient) {
 

@@ -1,6 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -9,14 +22,6 @@ import java.util.Locale;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -26,11 +31,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import java.util.Locale;
-
 
 public class Auto_Library extends LinearOpMode {
 
+//    VuforiaLocalizer vuforia;
     public ElapsedTime runtime = new ElapsedTime();
     public DcMotor leftFrontDrive = null;
     public DcMotor leftRearDrive = null;
@@ -147,7 +151,41 @@ public class Auto_Library extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "IMU");
         imu.initialize(parameters);
 
+//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        VuforiaLocalizer.Parameters parametersVuforia = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+//
+//        parametersVuforia.vuforiaLicenseKey = "AVg/GH7/////AAAAGXXrrHEuaEOzp854t67yt2t4YfSS5Iyu/3WJ5LWSNOtgL5mU1w7vaWX+xkMfu5KrjEezUhS3ZjmDjGN/kWJv4vPYUHhZEXGN1U0TCHGs4OFyqoRvtmzMCSe8QUgFu4QqTc/HtCS1p9GomGMP0x2uicjUbtrZmYEQsrHF58G/UzKB0WFqQpq0bQUIAvSprFLK2/KhqxvJ5YbBjlDGTjVCbiGbYCNoRSMrf/BQZXbIoIT4J7bW+ciKShWTc50Ixq6dSJAvM4a8KAO3HnAw2tvUFPk024VUNSOpa5aT+31U1hmhhb+UM4z2KxrGvnVtxgVbQlPiIOYdo6fsKt657wECa4lzztFKkKvWyDzJqDRZf+va\n";
+//
+//        parametersVuforia.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT  ;
+//        this.vuforia = ClassFactory.createVuforiaLocalizer(parametersVuforia);
+//
+//        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+//        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+//        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+
     }
+//    public void VuMarkRead(){
+//        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+//        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+//        relicTrackables.activate();
+//        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+//        if (vuMark.equals(RelicRecoveryVuMark.CENTER)){
+//            telemetry.addLine("Center");
+//            telemetry.update();
+//        }
+//        else if (vuMark.equals(RelicRecoveryVuMark.LEFT)){
+//            telemetry.addLine("Left");
+//            telemetry.update();
+//        }
+//        else if (vuMark.equals(RelicRecoveryVuMark.RIGHT)){
+//            telemetry.addLine("Right");
+//            telemetry.update();
+//        }
+//        else {
+//            telemetry.addLine("Default");
+//            telemetry.update();
+//        }
+//    }
     public void gyroTurn (  double speed, double angle, double coefficient) {
 
         telemetry.addLine("DM10337- gyroTurn start  speed:" + speed +
