@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -54,6 +55,7 @@ public class Auto_Library extends LinearOpMode {
     public Servo glyphStop = null;
     public Servo relicPivot = null;
     public ColorSensor sensorColor;
+    public DigitalChannel magneticSwitch;
     public BNO055IMU imu;
     public OpenGLMatrix lastLocation = null;
 
@@ -109,6 +111,10 @@ public class Auto_Library extends LinearOpMode {
 
         imu = hardwareMap.get(BNO055IMU.class, "IMU");
         sensorColor = hardwareMap.get(ColorSensor.class, "sensorColor");
+        magneticSwitch = hardwareMap.get(DigitalChannel.class, "sensor_magnetic");
+
+        // set the digital channel to input.
+        magneticSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         // set the direction of the motor
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);

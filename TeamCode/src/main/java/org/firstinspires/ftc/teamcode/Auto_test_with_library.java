@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -45,22 +46,30 @@ public class Auto_test_with_library extends LinearOpMode {
         while(opModeIsActive()) {
             relicTrackables.activate();
                 RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-                if (vuMark.equals(RelicRecoveryVuMark.CENTER)){
-                    telemetry.addLine("Center");
-                    telemetry.update();
-                }
-                else if (vuMark.equals(RelicRecoveryVuMark.LEFT)){
-                    telemetry.addLine("Left");
-                    telemetry.update();
-                }
-                else if (vuMark.equals(RelicRecoveryVuMark.RIGHT)){
-                    telemetry.addLine("Right");
-                    telemetry.update();
-                }
-                else {
-                    telemetry.addLine("Default");
-                    telemetry.update();
-                }
+
+            if (autoLibrary.magneticSwitch.getState() == true) {
+                telemetry.addData("Magnetic Switch", "Is Opened");
+            } else {
+                telemetry.addData("Magnetic Switch", "Is Closed");
+            }
+
+            telemetry.update();
+//                if (vuMark.equals(RelicRecoveryVuMark.CENTER)){
+//                    telemetry.addLine("Center");
+//                    telemetry.update();
+//                }
+//                else if (vuMark.equals(RelicRecoveryVuMark.LEFT)){
+//                    telemetry.addLine("Left");
+//                    telemetry.update();
+//                }
+//                else if (vuMark.equals(RelicRecoveryVuMark.RIGHT)){
+//                    telemetry.addLine("Right");
+//                    telemetry.update();
+//                }
+//                else {
+//                    telemetry.addLine("Default");
+//                    telemetry.update();
+//                }
 //            gyroTurn(0.5, 270, 0.011);
 //            sleep(1000);
 //        encoderStrafeLeft(0.75, 5, 5, 5);
