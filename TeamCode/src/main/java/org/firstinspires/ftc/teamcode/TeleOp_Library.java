@@ -154,15 +154,6 @@ public class TeleOp_Library  extends LinearOpMode {
     public void deployRelic() {//deployment
             relic_Deployment();
     }
-    public void runRelicReel() {
-        if (-gamepad2.left_stick_y > 0.4 || -gamepad2.left_stick_y < -0.4) {
-            relicReel.setPower(gamepad2.left_stick_y);
-        } else if (-gamepad2.right_stick_y > 0.4 || -gamepad2.right_stick_y < -0.4) {
-            relicReel.setPower(gamepad2.right_stick_y / 4);
-        } else {
-            relicReel.setPower(0);
-        }
-    }
     public void flipperFlatwithStop() {//flat
             glyphStop.setPosition(1.0);
             sleep(350);
@@ -197,28 +188,27 @@ public class TeleOp_Library  extends LinearOpMode {
             sleep(350);
             glyphStop.setPosition(0.3);
     }
-
         public void strafeLeft(double power) {
             // set the motors to strafe to the left
             leftFrontDrive.setPower(power);
             leftRearDrive.setPower(-power);
             rightFrontDrive.setPower(-power);
             rightRearDrive.setPower(power);
-        } public void strafeRight(double power){
+        }
+        public void strafeRight(double power){
             // // set the motors to strafe to the right
             leftFrontDrive.setPower(-power);
             leftRearDrive.setPower(power);
             rightFrontDrive.setPower(power);
             rightRearDrive.setPower(-power);
-        }public void driveForward(double leftPower, double rightPower) {
+        }
+        public void driveForward(double leftPower, double rightPower) {
             rightFrontDrive.setPower(-rightPower);
             rightRearDrive.setPower(-rightPower);
             leftFrontDrive.setPower(-leftPower);
             leftRearDrive.setPower(-leftPower);
         }
     public void telemetry(){
-        telemetry.addLine("Right Lift Motor: " + RightLiftMotor.getCurrentPosition());
-        telemetry.addLine("Left Lift Motor: " + LeftLiftMotor.getCurrentPosition());
         telemetry.update();
     }
     public void rightLift(int target){

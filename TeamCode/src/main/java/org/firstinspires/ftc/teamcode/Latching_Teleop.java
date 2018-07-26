@@ -89,9 +89,16 @@ public class Latching_Teleop extends LinearOpMode {
             if (gamepad2.x && teleOpLibrary.leftFlip.getPosition() >= 0.15) {
                 teleOpLibrary.lifterUp();
             }
-//            //teleOpLibrary.telemetry();
-//            //This is a test of Git
-//            //Another test
+            if (-gamepad2.left_stick_y > 0.4 || -gamepad2.left_stick_y < -0.4) {
+                teleOpLibrary.relicReel.setPower(gamepad2.left_stick_y);
+            } else if (-gamepad2.right_stick_y > 0.4 || -gamepad2.right_stick_y < -0.4) {
+                teleOpLibrary.relicReel.setPower(gamepad2.right_stick_y / 4);
+            } else {
+                teleOpLibrary.relicReel.setPower(0);
+            }
+            telemetry.addLine("Right Lift Motor: " + teleOpLibrary.RightLiftMotor.getCurrentPosition());
+            telemetry.addLine("Left Lift Motor: " + teleOpLibrary.LeftLiftMotor.getCurrentPosition());
+            telemetry.update();
         }
     }
 }
