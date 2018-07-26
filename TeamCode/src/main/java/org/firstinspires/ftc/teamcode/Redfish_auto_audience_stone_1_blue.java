@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -24,7 +23,7 @@ import java.util.Locale;
  **The test will be getting the color reading and then using the reading to activate our grippers.
  **In the real program the pushers wouldn't be used,but from this test we are only testing the logic of the code
  */
-@Autonomous(name = "Redfish_auto_audience_stone_blue", group = "Linear Opmode")
+@Autonomous(name = "Redfish auto audience stone blue", group = "Linear Opmode")
 
 public class Redfish_auto_audience_stone_1_blue extends LinearOpMode {
 
@@ -52,8 +51,7 @@ public class Redfish_auto_audience_stone_1_blue extends LinearOpMode {
         telemetry.update();
         waitForStart();
         while (opModeIsActive()) {
-            relicTrackables.activate();
-            while (opModeIsActive()) {
+                relicTrackables.activate();
                 autoLibrary.relicPivot.setPosition(0.95);
                 sleep(250);
                 autoLibrary.ColorArmTurn.setPosition(0.59);
@@ -154,7 +152,6 @@ public class Redfish_auto_audience_stone_1_blue extends LinearOpMode {
                 stop();
             }
         }
-    }
         public void gyroTurn( double speed, double angle, double coefficient){
 
             telemetry.addLine("DM10337- gyroTurn start  speed:" + speed +
