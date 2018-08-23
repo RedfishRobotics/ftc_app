@@ -115,11 +115,10 @@ public class Redfish_auto_audience_stone_1_blue extends LinearOpMode {
                 sleep(200);
                 autoLibrary.leftFlip.setPosition(0.15);
                 autoLibrary.rightFlip.setPosition(0.85);
+                encoderDrive(0.8, -2, -2, 5);
                 sleep(750);
                 autoLibrary.leftFlip.setPosition(0.65);
                 autoLibrary.rightFlip.setPosition(0.35);
-                sleep(500);
-                encoderDrive(0.8, -7, -7, 5);
                 sleep(250);
                 autoLibrary.rightFlip.setPosition(1.0);
                 autoLibrary.leftFlip.setPosition(0);
@@ -131,7 +130,7 @@ public class Redfish_auto_audience_stone_1_blue extends LinearOpMode {
                 autoLibrary.LeftIntakeMotor.setPower(0.8);
                 encoderDrive(0.8, 16, 16, 5);
                 sleep(250);
-                encoderDrive(0.8, -23, -23, 5);
+                encoderDrive(0.8, -20, -20, 5);
                 sleep(250);
                 autoLibrary.glyphStop.setPosition(0.85);
                 sleep(200);
