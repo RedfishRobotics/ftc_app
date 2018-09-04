@@ -55,6 +55,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 public class Swerve_Test extends LinearOpMode{
 
     Servo SwervePod1 = null;
+    Servo SwervePod2 = null;
 
 
         /* Initialize the hardware variables.
@@ -73,8 +74,11 @@ public class Swerve_Test extends LinearOpMode{
     public void runOpMode() {
 
         SwervePod1 = hardwareMap.get(Servo.class, "Swerve_Pod1");
+        SwervePod2 = hardwareMap.get(Servo.class, "Swerve_Pod2");
 
-        double SwervePod1Position = 0.47;
+        double SwervePod1Position = 0.5;
+        double SwervePod2Position = 0.5;
+        SwervePod2.setPosition(SwervePod2Position);
         SwervePod1.setPosition(SwervePod1Position);
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");
@@ -82,12 +86,36 @@ public class Swerve_Test extends LinearOpMode{
         waitForStart();
 
         while (opModeIsActive()){
-            if(gamepad1.right_stick_x >= -0.1 || gamepad1.right_stick_x <= 0.1) {
-                SwervePod1.setPosition(gamepad1.right_stick_x + 1 * 0.5);
+            if(gamepad1.a){ //Checked
+                SwervePod1.setPosition(0.5);
+                SwervePod2.setPosition(0.5);
             }
-            else {
-                SwervePod1.setPosition(0.47);
+            if(gamepad1.x){//
+                SwervePod1.setPosition(0.8);
+                SwervePod2.setPosition(0.2);
             }
+            if(gamepad1.y){//
+                SwervePod1.setPosition(0.35);
+                SwervePod2.setPosition(0.68);
+            }
+            if(gamepad1.b){//
+                SwervePod1.setPosition(0.2);
+                SwervePod2.setPosition(0.8);
+            }
+            if(gamepad1.right_bumper){//
+                SwervePod1.setPosition(0.35);
+                SwervePod2.setPosition(0.35);
+            }
+            if(gamepad1.left_bumper){//checked
+                SwervePod1.setPosition(0.685);
+                SwervePod2.setPosition(0.68);
+            }
+//            if(gamepad1.right_stick_x >= -0.1 || gamepad1.right_stick_x <= 0.1) {
+//                SwervePod1.setPosition(gamepad1.right_stick_x + 1 * 0.5);
+//            }
+//            else {
+//                SwervePod1.setPosition(0.47);
+//            }
 //         if(gamepad1.a){
 //             SwervePod1.setPosition(1.0);
 //         }
