@@ -30,8 +30,12 @@
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
@@ -52,21 +56,29 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 @TeleOp(name="Swerve_Test", group="Pushbot")
 
-public class Swerve_Test extends LinearOpMode{
+public class Swerve_Test extends LinearOpMode {
 
+    private ElapsedTime runtime = new ElapsedTime();
     Servo SwervePod1 = null;
     Servo SwervePod2 = null;
+    Servo SwervePod3 = null;
+    Servo SwervePod4 = null;
+    DcMotor SwervePod1motor = null;
+    DcMotor SwervePod2motor = null;
+    DcMotor SwervePod3motor = null;
+    DcMotor SwervePod4motor = null;
 
 
-        /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
-         */
-     double SwerveLeft;
-     double SwerveRight;
-     double Swerve_MIN_LEFT = 0.5;
-     double Swerve_MAX_LEFT = 1.0;
-     double Swerve_MIN_RIGHT = 0.0;
-     double Swerve_MAX_RIGHT = 0.5;
+    /* Initialize the hardware variables.
+     * The init() method of the hardware class does all the work here
+     */
+    double SwerveLeft;
+    double SwerveRight;
+    double Swerve_MIN_LEFT = 0.5;
+    double Swerve_MAX_LEFT = 1.0;
+    double Swerve_MIN_RIGHT = 0.0;
+    double Swerve_MAX_RIGHT = 0.5;
+
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
@@ -75,41 +87,74 @@ public class Swerve_Test extends LinearOpMode{
 
         SwervePod1 = hardwareMap.get(Servo.class, "Swerve_Pod1");
         SwervePod2 = hardwareMap.get(Servo.class, "Swerve_Pod2");
+        SwervePod3 = hardwareMap.get(Servo.class, "Swerve_Pod3");
+        SwervePod4 = hardwareMap.get(Servo.class, "Swerve_Pod4");
+
+        SwervePod1motor = hardwareMap.get(DcMotor.class, "Swerve_Pod1");
+        SwervePod2motor = hardwareMap.get(DcMotor.class, "Swerve_Pod2");
+        SwervePod3motor = hardwareMap.get(DcMotor.class, "Swerve_Pod3");
+        SwervePod4motor = hardwareMap.get(DcMotor.class, "Swerve_Pod4");
+
+        SwervePod1motor.setDirection(DcMotor.Direction.REVERSE);
+        SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
+        SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
+        SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
 
         double SwervePod1Position = 0.5;
         double SwervePod2Position = 0.5;
+        double SwervePod3Position = 0.5;
+        double SwervePod4Position = 0.5;
         SwervePod2.setPosition(SwervePod2Position);
         SwervePod1.setPosition(SwervePod1Position);
+        SwervePod3.setPosition(SwervePod3Position);
+        SwervePod4.setPosition(SwervePod4Position);
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");
 
         waitForStart();
 
-        while (opModeIsActive()){
-            if(gamepad1.a){ //Checked
+        while (opModeIsActive()) {
+            SwervePod1motor.setPower(-gamepad1.left_stick_y/2);
+            SwervePod2motor.setPower(-gamepad1.left_stick_y/2);
+            SwervePod3motor.setPower(-gamepad1.right_stick_y/2);
+            SwervePod4motor.setPower(-gamepad1.right_stick_y/2);
+            if (gamepad1.a) { //Checked
                 SwervePod1.setPosition(0.5);
                 SwervePod2.setPosition(0.5);
+                SwervePod3.setPosition(0.5);
+                SwervePod4.setPosition(0.5);
             }
-            if(gamepad1.x){//
+            if (gamepad1.x) {//
                 SwervePod1.setPosition(0.8);
                 SwervePod2.setPosition(0.2);
+                SwervePod3.setPosition(0.2);
+                SwervePod4.setPosition(0.8);
             }
-            if(gamepad1.y){//
-                SwervePod1.setPosition(0.35);
-                SwervePod2.setPosition(0.68);
+            if (gamepad1.y) {//
+                SwervePod1.setPosition(0.68);
+                SwervePod2.setPosition(0.35);
+                SwervePod3.setPosition(0.68);
+                SwervePod4.setPosition(0.35);
             }
-            if(gamepad1.b){//
+            if (gamepad1.b) {//
                 SwervePod1.setPosition(0.2);
                 SwervePod2.setPosition(0.8);
+                SwervePod3.setPosition(0.8);
+                SwervePod4.setPosition(0.2);
             }
-            if(gamepad1.right_bumper){//
+            if (gamepad1.right_bumper) {//
                 SwervePod1.setPosition(0.35);
                 SwervePod2.setPosition(0.35);
+                SwervePod3.setPosition(0.35);
+                SwervePod4.setPosition(0.35);
             }
-            if(gamepad1.left_bumper){//checked
+            if (gamepad1.left_bumper) {//checked
                 SwervePod1.setPosition(0.685);
                 SwervePod2.setPosition(0.68);
+                SwervePod3.setPosition(0.68);
+                SwervePod4.setPosition(0.685);
             }
+            RobotLog.i("DM10337  –Runtime:    " +  runtime.seconds());
 //            if(gamepad1.right_stick_x >= -0.1 || gamepad1.right_stick_x <= 0.1) {
 //                SwervePod1.setPosition(gamepad1.right_stick_x + 1 * 0.5);
 //            }
@@ -126,5 +171,5 @@ public class Swerve_Test extends LinearOpMode{
 //             SwervePod1.setPosition(0.5);
 //         }
         }
-        }
+    }
 }
