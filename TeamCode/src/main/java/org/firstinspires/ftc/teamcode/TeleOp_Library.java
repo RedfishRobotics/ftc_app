@@ -169,8 +169,8 @@ public class TeleOp_Library  extends LinearOpMode {
     public void lifterUp() {
             glyphStop.setPosition(0.85);
             sleep(350);
-            rightLift(3500);
-            leftLift(3500);
+            rightLift(6000);
+            leftLift(6000);
     }
     public void flipperDump() {
             glyphStop.setPosition(0.85);
