@@ -82,8 +82,14 @@ public class Swerve_Test extends LinearOpMode {
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
+
+    private static final double[] Latch = new double[]{0, 1};
+    private int currentLatchIndex;
+
     @Override
     public void runOpMode() {
+
+        this.currentLatchIndex = 0;
 
         SwervePod1 = hardwareMap.get(Servo.class, "Swerve_Pod1");
         SwervePod2 = hardwareMap.get(Servo.class, "Swerve_Pod2");
@@ -114,47 +120,65 @@ public class Swerve_Test extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            SwervePod1motor.setPower(-gamepad1.left_stick_y/2);
-            SwervePod2motor.setPower(-gamepad1.left_stick_y/2);
-            SwervePod3motor.setPower(-gamepad1.right_stick_y/2);
-            SwervePod4motor.setPower(-gamepad1.right_stick_y/2);
-            if (gamepad1.a) { //Checked
+            if(currentLatchIndex == 0) {
+                SwervePod1motor.setPower(-gamepad1.left_stick_y/2);
+                SwervePod2motor.setPower(-gamepad1.left_stick_y/2);
+                SwervePod3motor.setPower(-gamepad1.right_stick_y/2);
+                SwervePod4motor.setPower(-gamepad1.right_stick_y/2);
+                telemetry.addLine("Unlatched");
+                telemetry.update();
+            }
+            else if(currentLatchIndex == 1){
+                SwervePod1motor.setPower(gamepad1.left_stick_y/2);
+                SwervePod2motor.setPower(-gamepad1.left_stick_y/2);
+                SwervePod3motor.setPower(-gamepad1.right_stick_y/2);
+                SwervePod4motor.setPower(gamepad1.right_stick_y/2);
+                telemetry.addLine("Latched");
+                telemetry.update();
+            }
+            if (gamepad1.a) { //Middle
                 SwervePod1.setPosition(0.5);
                 SwervePod2.setPosition(0.5);
                 SwervePod3.setPosition(0.5);
                 SwervePod4.setPosition(0.5);
+                currentLatchIndex = 0 % Latch.length;
             }
             if (gamepad1.x) {//
                 SwervePod1.setPosition(0.8);
                 SwervePod2.setPosition(0.2);
-                SwervePod3.setPosition(0.2);
-                SwervePod4.setPosition(0.8);
+                SwervePod3.setPosition(0.8);
+                SwervePod4.setPosition(0.2);
+                currentLatchIndex = 1 % Latch.length;
             }
             if (gamepad1.y) {//
                 SwervePod1.setPosition(0.68);
                 SwervePod2.setPosition(0.35);
                 SwervePod3.setPosition(0.68);
                 SwervePod4.setPosition(0.35);
+                currentLatchIndex = 1 % Latch.length;
             }
             if (gamepad1.b) {//
-                SwervePod1.setPosition(0.2);
-                SwervePod2.setPosition(0.8);
+                SwervePod1.setPosition(0.8);
+                SwervePod2.setPosition(0.2);
                 SwervePod3.setPosition(0.8);
                 SwervePod4.setPosition(0.2);
+                currentLatchIndex = 0 % Latch.length;
             }
             if (gamepad1.right_bumper) {//
                 SwervePod1.setPosition(0.35);
                 SwervePod2.setPosition(0.35);
                 SwervePod3.setPosition(0.35);
                 SwervePod4.setPosition(0.35);
+                currentLatchIndex = 1 % Latch.length;
             }
             if (gamepad1.left_bumper) {//checked
                 SwervePod1.setPosition(0.685);
                 SwervePod2.setPosition(0.68);
                 SwervePod3.setPosition(0.68);
                 SwervePod4.setPosition(0.685);
+                currentLatchIndex = 0 % Latch.length;
             }
-            RobotLog.i("DM10337  –Runtime:    " +  runtime.seconds());
+            RobotLog.i("DM10337  –Runtime: " +  runtime.seconds());
 //            if(gamepad1.right_stick_x >= -0.1 || gamepad1.right_stick_x <= 0.1) {
 //                SwervePod1.setPosition(gamepad1.right_stick_x + 1 * 0.5);
 //            }
