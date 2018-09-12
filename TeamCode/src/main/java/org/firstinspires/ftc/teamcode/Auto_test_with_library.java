@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
@@ -25,6 +26,10 @@ public class Auto_test_with_library extends LinearOpMode {
     VuforiaLocalizer vuforia;
     Auto_Library autoLibrary = new Auto_Library();
 
+
+    public MovingAvg gyroErrorAvg = new MovingAvg(30);
+    static final double     P_DRIVE_COEFF_1         = 0.01;  // Larger is more responsive, but also less accurate
+    static final double     P_DRIVE_COEFF_2         = 0.25;  // Intenionally large so robot "wiggles" around the target setpoint while driving
 
     @Override
     public void runOpMode(){
@@ -89,6 +94,185 @@ public class Auto_test_with_library extends LinearOpMode {
 //        encoderDrive(0.75, 5, 5, 5);
         }
     }
+    public void encoderDrive(double speed,
+                             double distance,
+                             double timeout,
+                             boolean useGyro,
+                             double heading,
+                             boolean aggressive,
+                             boolean userange,
+                             double maintainRange) throws InterruptedException {
+
+        // Calculated encoder targets
+        int newLFTarget;
+        int newRFTarget;
+        int newLRTarget;
+        int newRRTarget;
+
+        // The potentially adjusted current target heading
+        double curHeading = heading;
+
+        // Speed ramp on start of move to avoid wheel slip
+        final double MINSPEED = 0.30;           // Start at this power
+        final double SPEEDINCR = 0.015;         // And increment by this much each cycle
+        double curSpeed;                        // Keep track of speed as we ramp
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            RobotLog.i("DM10337- Starting encoderDrive speed:" + speed +
+                    "  distance:" + distance + "  timeout:" + timeout +
+                    "  useGyro:" + useGyro + " heading:" + heading + "  maintainRange: " + maintainRange);
+
+            // Calculate "adjusted" distance  for each side to account for requested turn during run
+            // Purpose of code is to have PIDs closer to finishing even on curved moves
+            // This prevents jerk to one side at stop
+            double leftDistance = distance;
+            double rightDistance = distance;
+            if (useGyro) {
+                // We are gyro steering -- are we requesting a turn while driving?
+                double headingChange = getError(curHeading) * Math.signum(distance);
+                if (Math.abs(headingChange) > 5.0) {
+                    //Heading change is significant enough to account for
+                    if (headingChange > 0.0) {
+                        // Assume 15.25 inch wheelbase
+                        // Add extra distance to the wheel on outside of turn
+                        rightDistance += Math.signum(distance) * 2 * 3.1415 * 15.25 * headingChange / 360.0;
+                        RobotLog.i("DM10337 -- Turn adjusted R distance:" + rightDistance);
+                    } else {
+                        // Assume 15.25 inch wheelbase
+                        // Add extra distance from the wheel on inside of turn
+                        // headingChange is - so this is increasing the left distance
+                        leftDistance -= Math.signum(distance) * 2 * 3.1415 * 15.25 * headingChange / 360.0;
+                        RobotLog.i("DM10337 -- Turn adjusted L distance:" + leftDistance);
+                    }
+                }
+            }
+
+            // Determine new target encoder positions, and pass to motor controller
+            newLFTarget = autoLibrary.leftFrontDrive.getCurrentPosition() + (int)(leftDistance * autoLibrary.COUNTS_PER_INCH);
+            newLRTarget = autoLibrary.leftRearDrive.getCurrentPosition() + (int)(leftDistance * autoLibrary.COUNTS_PER_INCH);
+            newRFTarget = autoLibrary.rightFrontDrive.getCurrentPosition() + (int)(rightDistance * autoLibrary.COUNTS_PER_INCH);
+            newRRTarget = autoLibrary.rightRearDrive.getCurrentPosition() + (int)(rightDistance * autoLibrary.COUNTS_PER_INCH);
+
+            while(autoLibrary.leftFrontDrive.getTargetPosition() != newLFTarget){
+                autoLibrary.leftFrontDrive.setTargetPosition(newLFTarget);
+                sleep(1);
+            }
+            while(autoLibrary.rightFrontDrive.getTargetPosition() != newRFTarget){
+                autoLibrary.rightFrontDrive.setTargetPosition(newRFTarget);
+                sleep(1);
+            }
+            while(autoLibrary.leftRearDrive.getTargetPosition() != newLRTarget){
+                autoLibrary.leftRearDrive.setTargetPosition(newLRTarget);
+                sleep(1);
+            }
+            while(autoLibrary.rightRearDrive.getTargetPosition() != newRRTarget){
+                autoLibrary.rightRearDrive.setTargetPosition(newRRTarget);
+                sleep(1);
+            }
+
+            // Turn On motors to RUN_TO_POSITION
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            autoLibrary.runtime.reset();
+
+            speed = Math.abs(speed);    // Make sure its positive
+            curSpeed = Math.min(MINSPEED,speed);
+
+            // Set the motors to the starting power
+            autoLibrary.leftFrontDrive.setPower(Math.abs(curSpeed));
+            autoLibrary.rightFrontDrive.setPower(Math.abs(curSpeed));
+            autoLibrary.leftRearDrive.setPower(Math.abs(curSpeed));
+            autoLibrary.rightRearDrive.setPower(Math.abs(curSpeed));
+
+            // keep looping while we are still active, and there is time left, until at least 1 motor reaches target
+            while (opModeIsActive() &&
+                    (autoLibrary.runtime.seconds() < timeout) &&
+                    autoLibrary.leftFrontDrive.isBusy() &&
+                    autoLibrary.leftRearDrive.isBusy() &&
+                    autoLibrary.rightFrontDrive.isBusy() &&
+                    autoLibrary.rightRearDrive.isBusy()) {
+
+                // Ramp up motor powers as needed
+                if (curSpeed < speed) {
+                    curSpeed += SPEEDINCR;
+                }
+                double leftSpeed = curSpeed;
+                double rightSpeed = curSpeed;
+
+                // Doing gyro heading correction?
+                if (useGyro){
+
+                    // adjust relative speed based on heading
+                    double error = getError(curHeading);
+
+                    updateGyroErrorAvg(error);
+
+                    double steer = getSteer(error,
+                            (aggressive?P_DRIVE_COEFF_2:P_DRIVE_COEFF_1));
+
+                    // if driving in reverse, the motor correction also needs to be reversed
+                    if (distance < 0)
+                        steer *= -1.0;
+
+                    // Adjust motor powers for heading correction
+                    leftSpeed -= steer;
+                    rightSpeed += steer;
+
+                    // Normalize speeds if any one exceeds +/- 1.0;
+                    double max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+                    if (max > 1.0)
+                    {
+                        leftSpeed /= max;
+                        rightSpeed /= max;
+                    }
+
+                }
+
+                // And rewrite the motor speeds
+                autoLibrary.leftFrontDrive.setPower(Math.abs(leftSpeed));
+                autoLibrary.rightFrontDrive.setPower(Math.abs(rightSpeed));
+                autoLibrary.leftRearDrive.setPower(Math.abs(leftSpeed));
+                autoLibrary.rightRearDrive.setPower(Math.abs(rightSpeed));
+
+                // Allow time for other processes to run.
+                sleep(1);;
+            }
+
+
+            RobotLog.i("DM10337- encoderDrive done" +
+                    "  lftarget: " +newLFTarget + "  lfactual:" + autoLibrary.leftFrontDrive.getCurrentPosition() +
+                    "  lrtarget: " +newLRTarget + "  lractual:" + autoLibrary.leftRearDrive.getCurrentPosition() +
+                    "  rftarget: " +newRFTarget + "  rfactual:" + autoLibrary.rightFrontDrive.getCurrentPosition() +
+                    "  rrtarget: " +newRRTarget + "  rractual:" + autoLibrary.rightRearDrive.getCurrentPosition() +
+                    "  heading:" + readGyro());
+
+            RobotLog.i ("DM10337 - Gyro error average: " + gyroErrorAvg.average());
+
+            // Stop all motion;
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        }
+    }
+
+    public void updateGyroErrorAvg(double error) {
+        gyroErrorAvg.add(Math.abs(error));
+    }
+
     public void gyroTurn (  double speed, double angle, double coefficient) {
 
         telemetry.addLine("DM10337- gyroTurn start  speed:" + speed +
@@ -271,7 +455,7 @@ public class Auto_test_with_library extends LinearOpMode {
         autoLibrary.angles = autoLibrary.imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         return autoLibrary.angles.firstAngle - headingBias;
     }
-    public void encoderDrive(double speed,
+    /*public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
         int newLeftTarget;//init the variable newLeftTarget
@@ -327,7 +511,7 @@ public class Auto_test_with_library extends LinearOpMode {
             autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         }
-    }
+    }*/
     public void encoderStrafeLeft(double speed,
                                   double leftInches, double rightInches,
                                   double timeoutS) {
