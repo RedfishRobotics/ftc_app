@@ -1,0 +1,7 @@
+diff a/FtcRobotController/build.gradle b/FtcRobotController/build.gradle	(rejected hunks)
+@@ -25,4 +25,5 @@
+     }
+ }
+ 
++
+ apply from: 'build.release.gradle'
