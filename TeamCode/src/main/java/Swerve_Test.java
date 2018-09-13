@@ -106,6 +106,16 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
         SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
 
+        SwervePod1motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SwervePod2motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SwervePod3motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SwervePod4motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        SwervePod1motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        SwervePod2motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        SwervePod3motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        SwervePod4motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         double SwervePod1Position = 0.5;
         double SwervePod2Position = 0.5;
         double SwervePod3Position = 0.5;
@@ -120,36 +130,40 @@ public class Swerve_Test extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            if(currentLatchIndex == 0) {
-                SwervePod1motor.setPower(-gamepad1.left_stick_y/2);
-                SwervePod2motor.setPower(-gamepad1.left_stick_y/2);
-                SwervePod3motor.setPower(-gamepad1.right_stick_y/2);
-                SwervePod4motor.setPower(-gamepad1.right_stick_y/2);
-                telemetry.addLine("Unlatched");
-                telemetry.update();
+            if (gamepad1.x) {
+                SwervePod1motor.setPower(gamepad1.left_stick_y);
             }
-            else if(currentLatchIndex == 1){
-                SwervePod1motor.setPower(gamepad1.left_stick_y/2);
-                SwervePod2motor.setPower(-gamepad1.left_stick_y/2);
-                SwervePod3motor.setPower(-gamepad1.right_stick_y/2);
-                SwervePod4motor.setPower(gamepad1.right_stick_y/2);
-                telemetry.addLine("Latched");
-                telemetry.update();
+            else{
+                if (gamepad2.a){
+                    liftTest(0);
+                }
+                if (gamepad2.x){
+                    liftTest(7257);
+                }
+                if (gamepad2.b){
+                    liftTest(3628);
+                }
+                if (gamepad2.y){
+                    liftTest(5400);
+                }
+                if (gamepad2.dpad_down){
+                    liftTest(6328);
+                }
             }
-            if (gamepad1.a) { //Middle
-                SwervePod1.setPosition(0.5);
-                SwervePod2.setPosition(0.5);
-                SwervePod3.setPosition(0.5);
-                SwervePod4.setPosition(0.5);
-                currentLatchIndex = 0 % Latch.length;
-            }
-            if (gamepad1.x) {//
-                SwervePod1.setPosition(0.8);
-                SwervePod2.setPosition(0.2);
-                SwervePod3.setPosition(0.8);
-                SwervePod4.setPosition(0.2);
-                currentLatchIndex = 1 % Latch.length;
-            }
+//            if (gamepad1.a) { //Middle
+//                SwervePod1.setPosition(0.5);
+//                SwervePod2.setPosition(0.5);
+//                SwervePod3.setPosition(0.5);
+//                SwervePod4.setPosition(0.5);
+//                currentLatchIndex = 0 % Latch.length;
+//            }
+//            if (gamepad1.x) {//
+//                SwervePod1.setPosition(0.8);
+//                SwervePod2.setPosition(0.2);
+//                SwervePod3.setPosition(0.8);
+//                SwervePod4.setPosition(0.2);
+//                currentLatchIndex = 1 % Latch.length;
+//            }
             if (gamepad1.y) {//
                 SwervePod1.setPosition(0.68);
                 SwervePod2.setPosition(0.35);
@@ -178,7 +192,9 @@ public class Swerve_Test extends LinearOpMode {
                 SwervePod4.setPosition(0.685);
                 currentLatchIndex = 0 % Latch.length;
             }
-            RobotLog.i("DM10337  –Runtime: " +  runtime.seconds());
+
+                RobotLog.i("RF9958  –Runtime: " +  runtime.seconds()
+                        + "  RF9958 - lift encoder " + SwervePod1motor.getCurrentPosition());
 //            if(gamepad1.right_stick_x >= -0.1 || gamepad1.right_stick_x <= 0.1) {
 //                SwervePod1.setPosition(gamepad1.right_stick_x + 1 * 0.5);
 //            }
@@ -194,6 +210,29 @@ public class Swerve_Test extends LinearOpMode {
 //         if (gamepad1.x){
 //             SwervePod1.setPosition(0.5);
 //         }
+        }
+    }
+    public void liftTest(int target){
+        //Sets the new target position for the glyph lifter
+        // RightLiftMotor.setTargetPosition(target);
+        SwervePod1motor.setTargetPosition(target);
+        //Turns on RUN_TO_POSITION
+        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        SwervePod1motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //If statement that ask if the motor is busy
+        if( SwervePod1motor.isBusy()){
+            //If statement that checks if the motors current position is more then the target
+            if( SwervePod1motor.getCurrentPosition() > target){
+                //If the current position is more than the target, set motor power to 40%
+                // RightLiftMotor.setPower(0.45);
+                SwervePod1motor.setPower(0.85);
+            }
+            //If statement that checks if the motors current position is less then the target
+            else if(SwervePod1motor.getCurrentPosition() < target){
+                //If the current position is more than the target, set motor power to 60%
+                // RightLiftMotor.setPower(0.5);
+                SwervePod1motor.setPower(1.0);
+            }
         }
     }
 }

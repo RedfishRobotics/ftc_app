@@ -28,18 +28,18 @@ public class Auto_test_with_library extends LinearOpMode {
 
 
     public MovingAvg gyroErrorAvg = new MovingAvg(30);
-    static final double     P_DRIVE_COEFF_1         = 0.01;  // Larger is more responsive, but also less accurate
-    static final double     P_DRIVE_COEFF_2         = 0.25;  // Intenionally large so robot "wiggles" around the target setpoint while driving
+    static final double P_DRIVE_COEFF_1 = 0.01;  // Larger is more responsive, but also less accurate
+    static final double P_DRIVE_COEFF_2 = 0.25;  // Intenionally large so robot "wiggles" around the target setpoint while driving
 
     @Override
-    public void runOpMode(){
+    public void runOpMode() throws InterruptedException {
         autoLibrary.init(hardwareMap);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parametersVuforia = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         parametersVuforia.vuforiaLicenseKey = "AeyEUJr/////AAABmeFmvlzTdkEAiH3nHjERdd+Llh9YjOwGt7MJzlc6lwgtipxMyv3XcDmgJ9xt4hP+jxTG0U9/ryXj5p9dCnKDxdKUk0eXb7+916/0BpGO5Oo3sIu/wj56lSatbA6e/vHUHtawRO3XodseNo8YN3yQLPlEYDh6NuRP+m3559sMhYaJJnFdnieUEtgHV/Bjiv1P3wNy5dGDX541b+fBOiXX1xIq+Bt/bZ/c8dRZweH/56c8pwxszEZ3dLBr9e6IMqZ1q31B4dE1az8QzF3vHzmDHLwVu1Nw5noOeN3g7QEbgseLuUISxl8EvSHzcwumkAszmMaO+W0d10dMbgeuQnZgjInLfI/qhkVn22jewMn3whu3";
-        parametersVuforia.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT  ;
+        parametersVuforia.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parametersVuforia);
 
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
@@ -48,17 +48,22 @@ public class Auto_test_with_library extends LinearOpMode {
         composeTelemetry();
         telemetry.update();
         waitForStart();
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             relicTrackables.activate();
-                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
-            if (autoLibrary.magneticSwitch.getState() == true) {
-                telemetry.addData("Magnetic Switch", "Is Opened");
-            } else {
-                telemetry.addData("Magnetic Switch", "Is Closed");
-            }
+//            if (autoLibrary.magneticSwitch.getState() == true) {
+//                telemetry.addData("Magnetic Switch", "Is Opened");
+//            } else {
+//                telemetry.addData("Magnetic Switch", "Is Closed");
+//            }
 
-            telemetry.update();
+//            telemetry.update();
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            encoderDrive(0.8, 24.0, 5.0, false, 10.0, false, false, 1.0);
 //                if (vuMark.equals(RelicRecoveryVuMark.CENTER)){
 //                    telemetry.addLine("Center");
 //                    telemetry.update();
@@ -92,6 +97,7 @@ public class Auto_test_with_library extends LinearOpMode {
 //        autoLibrary.flipperDown();
 //        sleep(1000);
 //        encoderDrive(0.75, 5, 5, 5);
+            stop();
         }
     }
     public void encoderDrive(double speed,
@@ -137,13 +143,13 @@ public class Auto_test_with_library extends LinearOpMode {
                     if (headingChange > 0.0) {
                         // Assume 15.25 inch wheelbase
                         // Add extra distance to the wheel on outside of turn
-                        rightDistance += Math.signum(distance) * 2 * 3.1415 * 15.25 * headingChange / 360.0;
+                        rightDistance += Math.signum(distance) * 2 * 3.1415 * 12 * headingChange / 360.0;
                         RobotLog.i("DM10337 -- Turn adjusted R distance:" + rightDistance);
                     } else {
                         // Assume 15.25 inch wheelbase
                         // Add extra distance from the wheel on inside of turn
                         // headingChange is - so this is increasing the left distance
-                        leftDistance -= Math.signum(distance) * 2 * 3.1415 * 15.25 * headingChange / 360.0;
+                        leftDistance -= Math.signum(distance) * 2 * 3.1415 * 12 * headingChange / 360.0;
                         RobotLog.i("DM10337 -- Turn adjusted L distance:" + leftDistance);
                     }
                 }
@@ -247,9 +253,9 @@ public class Auto_test_with_library extends LinearOpMode {
 
             RobotLog.i("DM10337- encoderDrive done" +
                     "  lftarget: " +newLFTarget + "  lfactual:" + autoLibrary.leftFrontDrive.getCurrentPosition() +
-                    "  lrtarget: " +newLRTarget + "  lractual:" + autoLibrary.leftRearDrive.getCurrentPosition() +
+                    "  lrtarget: " +newLFTarget + "  lractual:" + autoLibrary.leftRearDrive.getCurrentPosition() +
                     "  rftarget: " +newRFTarget + "  rfactual:" + autoLibrary.rightFrontDrive.getCurrentPosition() +
-                    "  rrtarget: " +newRRTarget + "  rractual:" + autoLibrary.rightRearDrive.getCurrentPosition() +
+                    "  rrtarget: " +newRFTarget + "  rractual:" + autoLibrary.rightRearDrive.getCurrentPosition() +
                     "  heading:" + readGyro());
 
             RobotLog.i ("DM10337 - Gyro error average: " + gyroErrorAvg.average());
