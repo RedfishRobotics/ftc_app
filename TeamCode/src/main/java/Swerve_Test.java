@@ -30,6 +30,7 @@
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -63,6 +64,7 @@ public class Swerve_Test extends LinearOpMode {
     Servo SwervePod2 = null;
     Servo SwervePod3 = null;
     Servo SwervePod4 = null;
+    DcMotor IntakeSlide = null;
     DcMotor SwervePod1motor = null;
     DcMotor SwervePod2motor = null;
     DcMotor SwervePod3motor = null;
@@ -81,6 +83,10 @@ public class Swerve_Test extends LinearOpMode {
     double Swerve_MIN_RIGHT = 0.0;
     double Swerve_MAX_RIGHT = 0.5;
 
+    double IntakePosition = 0.065;
+    double IntakePositionClipped;
+    double Intake_MIN = 0.065;
+    double Intake_MAX = 0.23;
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
@@ -97,6 +103,7 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod2 = hardwareMap.get(Servo.class, "Swerve_Pod2");
         SwervePod3 = hardwareMap.get(Servo.class, "Swerve_Pod3");
         SwervePod4 = hardwareMap.get(Servo.class, "Swerve_Pod4");
+        IntakeSlide = hardwareMap.get(DcMotor.class, "IntakeSlide");
 
         SwervePod1motor = hardwareMap.get(DcMotor.class, "Swerve_Pod1motor");
         SwervePod2motor = hardwareMap.get(DcMotor.class, "Swerve_Pod2motor");
@@ -134,6 +141,7 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod1.setPosition(SwervePod1Position);
         SwervePod3.setPosition(SwervePod3Position);
         SwervePod4.setPosition(SwervePod4Position);
+        //IntakeSlide.setPosition(IntakePosition);
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");
 
@@ -146,6 +154,7 @@ public class Swerve_Test extends LinearOpMode {
             SwervePod4motor.setPower(-gamepad1.right_stick_y);
             LiftMotorLeft.setPower(-gamepad2.right_stick_y);
             LiftMotorRight.setPower(-gamepad2.right_stick_y);
+            IntakeSlide.setPower(-gamepad2.left_stick_y);
             if (currentLatchIndex == 0) {
                 SwervePod1motor.setDirection(DcMotor.Direction.REVERSE);
                 SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
@@ -157,6 +166,15 @@ public class Swerve_Test extends LinearOpMode {
                 SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
                 SwervePod4motor.setDirection(DcMotor.Direction.REVERSE);//changed
             }
+//            if(gamepad2.a){
+//                IntakeSlide.setPosition(0.065);
+//            }
+//            if(gamepad2.x){
+//                IntakeSlide.setPosition(0.24);
+//            }
+//            IntakePosition = -gamepad2.left_stick_y;
+//            IntakePositionClipped = Range.clip(IntakePosition, Intake_MIN, Intake_MAX);
+//            IntakeSlide.setPosition(IntakePositionClipped);
             //            if (gamepad1.x) {
 //                SwervePod1motor.setPower(gamepad1.left_stick_y);
 //            }
