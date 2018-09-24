@@ -1,0 +1,9 @@
+diff a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Auto_test_with_library.java b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Auto_test_with_library.java	(rejected hunks)
+@@ -1,6 +1,7 @@
+ package org.firstinspires.ftc.teamcode;
+ 
+ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
++import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+ import com.qualcomm.robotcore.hardware.DcMotor;
+ import com.qualcomm.robotcore.hardware.DigitalChannel;
