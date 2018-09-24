@@ -148,6 +148,12 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
         // Load the data sets that for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
         VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        VuforiaTrackables stonesAndChips = this.vuforia.loadTrackablesFromAsset("StonesAndChips");
+        VuforiaTrackable redTarget = stonesAndChips.get(0);
+        redTarget.setName("RedTarget");  // Stones
+
+        VuforiaTrackable blueTarget  = stonesAndChips.get(1);
+        blueTarget.setName("BlueTarget");  // Chips
         VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
         blueRover.setName("Blue-Rover");
         VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
@@ -160,6 +166,7 @@ public class ConceptVuforiaNavRoverRuckus extends LinearOpMode {
         // For convenience, gather together all the trackable objects in one easily-iterable collection */
         List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
         allTrackables.addAll(targetsRoverRuckus);
+        allTrackables.addAll(stonesAndChips);
 
         /**
          * In order for localization to work, we need to tell the system where each target is on the field, and

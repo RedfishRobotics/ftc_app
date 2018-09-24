@@ -33,7 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+//import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -84,14 +84,14 @@ public class ConceptVuMarkIdentificationWebcam extends LinearOpMode {
      * This is the webcam we are to use. As with other hardware devices such as motors and
      * servos, this device is identified using the robot configuration tool in the FTC application.
      */
-    WebcamName webcamName;
-
-    @Override public void runOpMode() {
+    // WebcamName webcamName;
+    @Override
+    public void runOpMode() {
 
         /*
          * Retrieve the camera we are to use.
          */
-        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+//        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
@@ -122,8 +122,8 @@ public class ConceptVuMarkIdentificationWebcam extends LinearOpMode {
          * We also indicate which camera on the RC we wish to use. For pedagogical purposes,
          * we use the same logic as in {@link ConceptVuforiaNavigationWebcam}.
          */
-        parameters.cameraName = webcamName;
-        this.vuforia = ClassFactory.getInstance().createVuforia(parameters);
+//        parameters.cameraName = webcamName;
+//        this.vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
         /**
          * Load the data set containing the VuMarks for Relic Recovery. There's only one trackable
@@ -160,35 +160,38 @@ public class ConceptVuMarkIdentificationWebcam extends LinearOpMode {
                 /* For fun, we also exhibit the navigational pose. In the Relic Recovery game,
                  * it is perhaps unlikely that you will actually need to act on this pose information, but
                  * we illustrate it nevertheless, for completeness. */
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getFtcCameraFromTarget();
-                telemetry.addData("Pose", format(pose));
+//                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getFtcCameraFromTarget();
+//                telemetry.addData("Pose", format(pose));
 
                 /* We further illustrate how to decompose the pose into useful rotational and
                  * translational components */
-                if (pose != null) {
-                    VectorF trans = pose.getTranslation();
-                    Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+//                if (pose != null) {
+//                    VectorF trans = pose.getTranslation();
+//                   Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 
-                    // Extract the X, Y, and Z components of the offset of the target relative to the robot
-                    double tX = trans.get(0);
-                    double tY = trans.get(1);
-                    double tZ = trans.get(2);
+                // Extract the X, Y, and Z components of the offset of the target relative to the robot
+//                    double tX = trans.get(0);
+//                    double tY = trans.get(1);
+//                    double tZ = trans.get(2);
+//
+//                    // Extract the rotational components of the target relative to the robot
+//                    double rX = rot.firstAngle;
+//                    double rY = rot.secondAngle;
+//                    double rZ = rot.thirdAngle;
+//                }
+//            }
+////            else {
+//                telemetry.addData("VuMark", "not visible");
+//            }
 
-                    // Extract the rotational components of the target relative to the robot
-                    double rX = rot.firstAngle;
-                    double rY = rot.secondAngle;
-                    double rZ = rot.thirdAngle;
-                }
+//            telemetry.update();
+//        }
+//    }
+
+//    String format(OpenGLMatrix transformationMatrix) {
+//        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+//    }
             }
-            else {
-                telemetry.addData("VuMark", "not visible");
-            }
-
-            telemetry.update();
         }
-    }
-
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 }
