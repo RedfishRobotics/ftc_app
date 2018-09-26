@@ -42,6 +42,7 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 //import org.firstinspires.ftc.robotcore.external.hardware.Consumer;
 //import org.firstinspires.ftc.robotcore.external.hardware.Continuation;
 //import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+//import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -101,7 +102,7 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
     OpenGLMatrix lastLocation = null;
 
     /**
-     * @see #captureFrameToFile()
+     //* @see #captureFrameToFile()
      */
     int captureCounter = 0;
     File captureDirectory = AppUtil.ROBOT_DATA_DIR;
@@ -147,7 +148,7 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
          * Once you've obtained a license key, copy the string from the Vuforia web site
          * and paste it in to your code on the next line, between the double quotes.
          */
-        parameters.vuforiaLicenseKey = " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+        parameters.vuforiaLicenseKey = "AaxEeJj/////AAABmdLSaHu3GEP4oER0Z4wPyoYCDrpQOx7X1WZ792YNzZwWGHsLEoTDlfqsXqFSF65DRwdrvXt8RCy1oOpTCReV8Mb7NJETFJupTeuqAt9KHsxxSszvgNq6nY4yzLCMWHPWmmh+iKRyJGSKXv4rZ3Z9t1wcPkSZ1p0jBlFX9v4wqGQSumKTKmgpV+133yONI/3EX8UvIJJQMMW65V1SiNaq8xw2NRZMXYU2b8BemEUQTYDmdD1mOoOw5gBSYuNhaWR3JpZ0tGJ2n4CrSQiD+UeGLC1NkA+lFp3XgoYIbHb6p08rdRsvbytOTQ/13fCfiVtpgibzARDbRQQ9PcdTBMphdHjf2ZZmsDG4iDYV2hmUGbMQ";
 
         /**
          * We also indicate which camera on the RC we wish to use.
@@ -389,7 +390,7 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad1.a && !buttonPressed) {
-                captureFrameToFile();
+                //captureFrameToFile();
             }
             buttonPressed = gamepad1.a;
 
@@ -435,11 +436,11 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
      * in order to get a sense of what the camera is actually seeing and so assist in camera
      * aiming and alignment.
      */
-    void captureFrameToFile() {
+//    void captureFrameToFile() {
 //        vuforia.getFrameOnce(Continuation.create(ThreadPool.getDefault(), new Consumer<Frame>()
-        {
+//        {
 //            @Override public void accept(Frame frame)
-            {
+//            {
 //                Bitmap bitmap = vuforia.convertFrameToBitmap(frame);
 //                if (bitmap != null) {
 //                    File file = new File(captureDirectory, String.format(Locale.getDefault(), "VuforiaFrame-%d.png", captureCounter++));
@@ -450,15 +451,12 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
 //                        } finally {
 //                            outputStream.close();
 //                            telemetry.log().add("captured %s", file.getName());
-            }
+//            }
 //                    } catch (IOException e) {
 //                        RobotLog.ee(TAG, e, "exception in captureFrameToFile()");
-//                    }
-//                }
-//            }
-//        }));
-//    }
+                  //  }
+          //      }
+            }
+        //}));
+    //}
 //}
-        }
-    }
-}
