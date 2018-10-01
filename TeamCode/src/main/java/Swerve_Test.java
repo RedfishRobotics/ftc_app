@@ -64,6 +64,8 @@ public class Swerve_Test extends LinearOpMode {
     Servo SwervePod2 = null;
     Servo SwervePod3 = null;
     Servo SwervePod4 = null;
+    Servo Flipper1 = null;
+    Servo Flipper2 = null;
     DcMotor IntakeSlide = null;
     DcMotor SwervePod1motor = null;
     DcMotor SwervePod2motor = null;
@@ -103,6 +105,8 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod2 = hardwareMap.get(Servo.class, "Swerve_Pod2");
         SwervePod3 = hardwareMap.get(Servo.class, "Swerve_Pod3");
         SwervePod4 = hardwareMap.get(Servo.class, "Swerve_Pod4");
+        Flipper1 = hardwareMap.get(Servo.class, "Flipper_Right");
+        Flipper2 = hardwareMap.get(Servo.class, "Flipper_Left");
         IntakeSlide = hardwareMap.get(DcMotor.class, "IntakeSlide");
 
         SwervePod1motor = hardwareMap.get(DcMotor.class, "Swerve_Pod1motor");
@@ -137,10 +141,14 @@ public class Swerve_Test extends LinearOpMode {
         double SwervePod2Position = 0.5;
         double SwervePod3Position = 0.5;
         double SwervePod4Position = 0.5;
+        double Flipper1Position = 0.1;
+        double Flipper2Position = 0.9;
         SwervePod2.setPosition(SwervePod2Position);
         SwervePod1.setPosition(SwervePod1Position);
         SwervePod3.setPosition(SwervePod3Position);
         SwervePod4.setPosition(SwervePod4Position);
+        Flipper1.setPosition(Flipper1Position);
+        Flipper2.setPosition(Flipper2Position);
         //IntakeSlide.setPosition(IntakePosition);
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");
@@ -199,6 +207,18 @@ public class Swerve_Test extends LinearOpMode {
 //                liftTestLeft(14580);
 //                liftTestRight(14580);
 //            }
+            if(gamepad2.x){
+                Flipper1.setPosition(0.9);
+                Flipper2.setPosition(0.1);
+            }
+            if(gamepad2.a){
+                Flipper1.setPosition(0.5);
+                Flipper2.setPosition(0.5);
+            }
+            if(gamepad2.b){
+                Flipper1.setPosition(0.1);
+                Flipper2.setPosition(0.9);
+            }
             if (gamepad1.a) { //Middle
                 SwervePod1.setPosition(0.5);
                 SwervePod2.setPosition(0.5);
