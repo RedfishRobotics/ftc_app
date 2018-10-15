@@ -126,7 +126,7 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
         SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
         IntakeLift.setDirection(DcMotor.Direction.REVERSE);
-        IntakeMotor.setDirection(DcMotor.Direction.FORWARD);
+        IntakeMotor.setDirection(DcMotor.Direction.REVERSE);
 //        LiftMotorRight.setDirection(DcMotor.Direction.REVERSE);
 //        LiftMotorLeft.setDirection(DcMotor.Direction.REVERSE);
 
@@ -142,7 +142,7 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod2motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod3motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod4motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        IntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        IntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        IntakeLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        LiftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        LiftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -186,19 +186,22 @@ public class Swerve_Test extends LinearOpMode {
                 SwervePod4motor.setDirection(DcMotor.Direction.REVERSE);//changed
             }
             if(gamepad2.a){
-                liftTest(950);
+                liftTest(1200);
             }
             if(gamepad2.b){
-                liftTest(350);
+                liftTest(500);
             }
             if(gamepad1.dpad_up){
-                IntakeMotor.setPower(1.0);
+                IntakeMotor.setPower(0.75);
             }
             if(gamepad1.dpad_left){
                 IntakeMotor.setPower(0.0);
             }
             if(gamepad1.dpad_down){
-                IntakeMotor.setPower(-1.0);
+                IntakeMotor.setPower(-0.5);
+            }
+            if(gamepad1.dpad_right){
+                IntakeMotor.setPower(0.25);
             }
             if (gamepad1.a) { //Middle
                 SwervePod1.setPosition(0.5);
@@ -283,6 +286,8 @@ public class Swerve_Test extends LinearOpMode {
                 // RightLiftMotor.setPower(0.5);
                 IntakeLift.setPower(0.25);
             }
+            sleep(250l);
+            IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 //    public void liftTestRight(int target){
