@@ -73,27 +73,6 @@ public class Swerve_Test extends LinearOpMode {
     DcMotor SwervePod4motor = null;
     DcMotor IntakeMotor = null;
     DcMotor LiftMotor = null;
-//    DcMotor LiftMotorRight = null;
-//    DcMotor LiftMotorLeft = null;
-
-
-    /* Initialize the hardware variables.
-     * The init() method of the hardware class does all the work here
-     */
-    double SwerveLeft;
-    double SwerveRight;
-    double Swerve_MIN_LEFT = 0.5;
-    double Swerve_MAX_LEFT = 1.0;
-    double Swerve_MIN_RIGHT = 0.0;
-    double Swerve_MAX_RIGHT = 0.5;
-
-    double IntakePosition = 0.065;
-    double IntakePositionClipped;
-    double Intake_MIN = 0.065;
-    double Intake_MAX = 0.23;
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
 
     private static final double[] Latch = new double[]{0, 1};
     private int currentLatchIndex;
@@ -118,8 +97,6 @@ public class Swerve_Test extends LinearOpMode {
         IntakeLift = hardwareMap.get(DcMotor.class, "IntakeLift");
         IntakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
         LiftMotor = hardwareMap.get(DcMotor.class, "LiftMotor");
-//        LiftMotorLeft = hardwareMap.get(DcMotor.class, "LiftMotorLeft");
-//        LiftMotorRight = hardwareMap.get(DcMotor.class, "LiftMotorRight");
 
         SwervePod1motor.setDirection(DcMotor.Direction.REVERSE);
         SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
@@ -127,25 +104,16 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
         IntakeLift.setDirection(DcMotor.Direction.REVERSE);
         IntakeMotor.setDirection(DcMotor.Direction.REVERSE);
-//        LiftMotorRight.setDirection(DcMotor.Direction.REVERSE);
-//        LiftMotorLeft.setDirection(DcMotor.Direction.REVERSE);
 
         SwervePod1motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod2motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod3motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod4motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        IntakeLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        LiftMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        LiftMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         SwervePod1motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod2motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod3motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod4motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        IntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        IntakeLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        LiftMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        LiftMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double SwervePod1Position = 0.5;
         double SwervePod2Position = 0.5;
@@ -171,9 +139,7 @@ public class Swerve_Test extends LinearOpMode {
             SwervePod3motor.setPower(-gamepad1.left_stick_y);
             SwervePod4motor.setPower(-gamepad1.left_stick_y);
             LiftMotor.setPower(-gamepad2.left_stick_y);
-//            LiftMotorLeft.setPower(-gamepad2.right_stick_y);
-//            LiftMotorRight.setPower(-gamepad2.right_stick_y);
-//            IntakeLift.setPower(-gamepad2.left_stick_y/2);
+
             if (currentLatchIndex == 0) {
                 SwervePod1motor.setDirection(DcMotor.Direction.REVERSE);
                 SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
@@ -290,27 +256,4 @@ public class Swerve_Test extends LinearOpMode {
             IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
-//    public void liftTestRight(int target){
-//        //Sets the new target position for the glyph lifter
-//        // RightLiftMotor.setTargetPosition(target);
-//        LiftMotorRight.setTargetPosition(target);
-//        //Turns on RUN_TO_POSITION
-//        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        LiftMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        //If statement that ask if the motor is busy
-//        if(LiftMotorRight.isBusy()){
-//            //If statement that checks if the motors current position is more then the target
-//            if(LiftMotorRight.getCurrentPosition() > target){
-//                //If the current position is more than the target, set motor power to 40%
-//                // RightLiftMotor.setPower(0.45);
-//                LiftMotorRight.setPower(0.85);
-//            }
-//            //If statement that checks if the motors current position is less then the target
-//            else if(LiftMotorRight.getCurrentPosition() < target){
-//                //If the current position is more than the target, set motor power to 60%
-//                // RightLiftMotor.setPower(0.5);
-//                LiftMotorRight.setPower(1.0);
-//            }
-//        }
-//    }
 }
