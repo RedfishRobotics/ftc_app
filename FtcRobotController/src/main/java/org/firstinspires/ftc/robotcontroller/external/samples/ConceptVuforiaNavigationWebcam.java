@@ -39,10 +39,9 @@ import com.qualcomm.robotcore.util.ThreadPool;
 import com.vuforia.Frame;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-//import org.firstinspires.ftc.robotcore.external.hardware.Consumer;
-//import org.firstinspires.ftc.robotcore.external.hardware.Continuation;
-//import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-//import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -117,14 +116,14 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
      * This is the webcam we are to use. As with other hardware devices such as motors and
      * servos, this device is identified using the robot configuration tool in the FTC application.
      */
-//    WebcamName webcamName;
+    WebcamName webcamName;
     @Override
     public void runOpMode() {
 
         /*
          * Retrieve the camera we are to use.
          */
-//        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
@@ -134,7 +133,7 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         // OR...  Do Not Activate the Camera Monitor View, to save power
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+//         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         /*
          * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -153,19 +152,19 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-//        parameters.cameraName = webcamName;
+        parameters.cameraName = webcamName;
 
         /**
          * Instantiate the Vuforia engine
          */
-//        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
         /**
          * Because this opmode processes frames in order to write them to a file, we tell Vuforia
          * that we want to ensure that certain frame formats are available in the {@link Frame}s we
          * see.
          */
-//        vuforia.enableConvertFrameToBitmap();
+        vuforia.enableConvertFrameToBitmap();
 
         /** @see #captureFrameToFile() */
         AppUtil.getInstance().ensureDirectoryExists(captureDirectory);
@@ -266,7 +265,7 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 90, 0));
-//        redTarget.setLocationFtcFieldFromTarget(redTargetLocationOnField);
+        redTarget.setLocationFtcFieldFromTarget(redTargetLocationOnField);
         RobotLog.ii(TAG, "Red Target=%s", format(redTargetLocationOnField));
 
         /*
@@ -282,7 +281,7 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
                         /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
                         AxesReference.EXTRINSIC, AxesOrder.XZX,
                         AngleUnit.DEGREES, 90, 0, 0));
-//        blueTarget.setLocationFtcFieldFromTarget(blueTargetLocationOnField);
+        blueTarget.setLocationFtcFieldFromTarget(blueTargetLocationOnField);
         RobotLog.ii(TAG, "Blue Target=%s", format(blueTargetLocationOnField));
 
         /**
@@ -356,8 +355,8 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
          * listener is a {@link VuforiaTrackableDefaultListener} and can so safely cast because
          * we have not ourselves installed a listener of a different type.
          */
-//        ((VuforiaTrackableDefaultListener)redTarget.getListener()).setCameraLocationOnRobot(parameters.cameraName, robotFromCamera);
-//        ((VuforiaTrackableDefaultListener)blueTarget.getListener()).setCameraLocationOnRobot(parameters.cameraName, robotFromCamera);
+        ((VuforiaTrackableDefaultListener)redTarget.getListener()).setCameraLocationOnRobot(parameters.cameraName, robotFromCamera);
+        ((VuforiaTrackableDefaultListener)blueTarget.getListener()).setCameraLocationOnRobot(parameters.cameraName, robotFromCamera);
 
         /**
          * A brief tutorial: here's how all the math is going to work:
@@ -436,7 +435,7 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
      * in order to get a sense of what the camera is actually seeing and so assist in camera
      * aiming and alignment.
      */
-//    void captureFrameToFile() {
+//    public void captureFrameToFile() {
 //        vuforia.getFrameOnce(Continuation.create(ThreadPool.getDefault(), new Consumer<Frame>()
 //        {
 //            @Override public void accept(Frame frame)
@@ -454,9 +453,9 @@ public class ConceptVuforiaNavigationWebcam extends LinearOpMode {
 //            }
 //                    } catch (IOException e) {
 //                        RobotLog.ee(TAG, e, "exception in captureFrameToFile()");
-                  //  }
-          //      }
-            }
-        //}));
+//                    }
+//                }
+//            }
+//        }));
     //}
-//}
+}
