@@ -25,7 +25,7 @@ import java.util.Locale;
  **In the real program the pushers wouldn't be used,but from this test we are only testing the logic of the code
  */
 @Autonomous(name = "Redfish auto audience stone blue", group = "Linear Opmode")
-
+@Disabled
 public class Redfish_auto_audience_stone_1_blue extends LinearOpMode {
 
     // Declare Opmode members.

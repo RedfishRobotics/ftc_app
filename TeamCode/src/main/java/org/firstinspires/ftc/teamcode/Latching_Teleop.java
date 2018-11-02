@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Latching TeleOp Test", group="Linear Opmode")
-
+@Disabled
 public class Latching_Teleop extends LinearOpMode {
 
     TeleOp_Library teleOpLibrary = new TeleOp_Library();

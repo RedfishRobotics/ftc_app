@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name="Latching TeleOp Test Elevator", group="Linear Opmode")
-
+@Disabled
 public class Latching_Teleop_Dirve_Elevator extends LinearOpMode {
 
     TeleOp_Library teleOpLibrary = new TeleOp_Library();

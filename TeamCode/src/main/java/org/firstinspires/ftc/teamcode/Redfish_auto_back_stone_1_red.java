@@ -24,7 +24,7 @@ import java.util.Locale;
  **In the real program the pushers wouldn't be used,but from this test we are only testing the logic of the code
  */
 @Autonomous(name = "Redfish_auto_back_stone_red", group = "Sensor")
-
+@Disabled
 public class Redfish_auto_back_stone_1_red extends LinearOpMode {
 
     VuforiaLocalizer vuforia;
