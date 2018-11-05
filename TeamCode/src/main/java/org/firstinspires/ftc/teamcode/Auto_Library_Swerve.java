@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -32,17 +33,19 @@ public class Auto_Library_Swerve extends LinearOpMode {
     Servo SwervePod2 = null;
     Servo SwervePod3 = null;
     Servo SwervePod4 = null;
-    Servo Flipper1 = null;
-    Servo Flipper2 = null;
-    DcMotor IntakeLift = null;
+    Servo cubeKnockRight = null;
+    Servo cubeKnockLeft = null;
+    DcMotor IntakeLiftRight = null;
+    DcMotor IntakeLiftLeft = null;
     DcMotor SwervePod1motor = null;
     DcMotor SwervePod2motor = null;
     DcMotor SwervePod3motor = null;
     DcMotor SwervePod4motor = null;
     DcMotor IntakeMotor = null;
     DcMotor LiftMotor = null;
+    Servo WebcamPan = null;
     public ElapsedTime runtime = new ElapsedTime();
-    
+
     public BNO055IMU imu;
     public OpenGLMatrix lastLocation = null;
 
@@ -81,15 +84,16 @@ public class Auto_Library_Swerve extends LinearOpMode {
         SwervePod2 = hardwareMap.get(Servo.class, "Swerve_Pod2");
         SwervePod3 = hardwareMap.get(Servo.class, "Swerve_Pod3");
         SwervePod4 = hardwareMap.get(Servo.class, "Swerve_Pod4");
-        Flipper1 = hardwareMap.get(Servo.class, "Flipper_Right");
-        Flipper2 = hardwareMap.get(Servo.class, "Flipper_Left");
+        cubeKnockLeft = hardwareMap.get(Servo.class, "knockleft");
+        cubeKnockRight = hardwareMap.get(Servo.class, "knockright");
 //        IntakeSlide = hardwareMap.get(DcMotor.class, "IntakeSlide");
 
         SwervePod1motor = hardwareMap.get(DcMotor.class, "Swerve_Pod1motor");
         SwervePod2motor = hardwareMap.get(DcMotor.class, "Swerve_Pod2motor");
         SwervePod3motor = hardwareMap.get(DcMotor.class, "Swerve_Pod3motor");
         SwervePod4motor = hardwareMap.get(DcMotor.class, "Swerve_Pod4motor");
-        IntakeLift = hardwareMap.get(DcMotor.class, "IntakeLift");
+        IntakeLiftLeft = hardwareMap.get(DcMotor.class, "IntakeLiftLeft");
+        IntakeLiftRight = hardwareMap.get(DcMotor.class, "IntakeLiftRight");
         IntakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
         LiftMotor = hardwareMap.get(DcMotor.class, "LiftMotor");
 
@@ -97,38 +101,43 @@ public class Auto_Library_Swerve extends LinearOpMode {
         SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
         SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
         SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
-        IntakeLift.setDirection(DcMotor.Direction.REVERSE);
+        IntakeLiftRight.setDirection(DcMotor.Direction.REVERSE);
+        IntakeLiftLeft.setDirection(DcMotor.Direction.REVERSE);
         IntakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         SwervePod1motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod2motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod3motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod4motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        IntakeLiftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        IntakeLiftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         SwervePod1motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod2motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod3motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod4motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        IntakeLiftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        IntakeLiftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double SwervePod1Position = 0.5;
         double SwervePod2Position = 0.5;
         double SwervePod3Position = 0.5;
         double SwervePod4Position = 0.5;
-        double Flipper1Position = 0.1;
-        double Flipper2Position = 0.9;
+        double CubeKnockLeftPosition = 0.92;
+        double CubeKnockRightPosition = 0.13;
         SwervePod2.setPosition(SwervePod2Position);
         SwervePod1.setPosition(SwervePod1Position);
         SwervePod3.setPosition(SwervePod3Position);
         SwervePod4.setPosition(SwervePod4Position);
-        Flipper1.setPosition(Flipper1Position);
-        Flipper2.setPosition(Flipper2Position);
+        cubeKnockRight.setPosition(CubeKnockRightPosition);
+        cubeKnockLeft.setPosition(CubeKnockLeftPosition);
 
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = hardwareMap.get(BNO055IMU.class, "IMU");
         imu.initialize(parameters);
 
     }
-    public void turn(){
+    public void turnPosition(){
         SwervePod1.setPosition(0.8);
         SwervePod2.setPosition(0.2);
         SwervePod3.setPosition(0.8);
@@ -139,7 +148,7 @@ public class Auto_Library_Swerve extends LinearOpMode {
         SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
         SwervePod4motor.setDirection(DcMotor.Direction.REVERSE);//changed
     }
-    public void spinonself(){
+    public void left45Position(){
         SwervePod1.setPosition(0.35);
         SwervePod2.setPosition(0.35);
         SwervePod3.setPosition(0.35);
@@ -150,7 +159,29 @@ public class Auto_Library_Swerve extends LinearOpMode {
         SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
         SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
     }
-    public void sraight(){
+    public void right45Position(){
+        SwervePod1.setPosition(0.685);
+        SwervePod2.setPosition(0.68);
+        SwervePod3.setPosition(0.68);
+        SwervePod4.setPosition(0.685);
+        sleep(250);
+        SwervePod1motor.setDirection(DcMotor.Direction.REVERSE);
+        SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
+        SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
+        SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
+    }
+    public void spinPosition(){
+        SwervePod1.setPosition(0.68);
+        SwervePod2.setPosition(0.35);
+        SwervePod3.setPosition(0.68);
+        SwervePod4.setPosition(0.35);
+        sleep(250);
+        SwervePod1motor.setDirection(DcMotor.Direction.REVERSE);
+        SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
+        SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
+        SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
+    }
+    public void straightPosition(){
         SwervePod1.setPosition(0.5);
         SwervePod2.setPosition(0.5);
         SwervePod3.setPosition(0.5);
@@ -160,6 +191,12 @@ public class Auto_Library_Swerve extends LinearOpMode {
         SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
         SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
         SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
+    }
+    public void rightKnock(){
+        cubeKnockRight.setPosition(0.5);
+    }
+    public void leftKnock(){
+        cubeKnockLeft.setPosition(0.55);
     }
     public void gyroTurn (  double speed, double angle, double coefficient) {
 
