@@ -32,7 +32,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -64,9 +63,11 @@ public class Swerve_Test extends LinearOpMode {
     Servo SwervePod2 = null;
     Servo SwervePod3 = null;
     Servo SwervePod4 = null;
-    Servo Flipper1 = null;
-    Servo Flipper2 = null;
-    DcMotor IntakeLift = null;
+    Servo ScoreFlipper = null;
+    Servo cubeKnockRight = null;
+    Servo cubeKnockLeft = null;
+    DcMotor IntakeLiftRight = null;
+    DcMotor IntakeLiftLeft = null;
     DcMotor SwervePod1motor = null;
     DcMotor SwervePod2motor = null;
     DcMotor SwervePod3motor = null;
@@ -86,15 +87,17 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod2 = hardwareMap.get(Servo.class, "Swerve_Pod2");
         SwervePod3 = hardwareMap.get(Servo.class, "Swerve_Pod3");
         SwervePod4 = hardwareMap.get(Servo.class, "Swerve_Pod4");
-        Flipper1 = hardwareMap.get(Servo.class, "Flipper_Right");
-        Flipper2 = hardwareMap.get(Servo.class, "Flipper_Left");
+        cubeKnockLeft = hardwareMap.get(Servo.class, "knockleft");
+        cubeKnockRight = hardwareMap.get(Servo.class, "knockright");
+        ScoreFlipper = hardwareMap.get(Servo.class, "ScoreFlipper");
 //        IntakeSlide = hardwareMap.get(DcMotor.class, "IntakeSlide");
 
         SwervePod1motor = hardwareMap.get(DcMotor.class, "Swerve_Pod1motor");
         SwervePod2motor = hardwareMap.get(DcMotor.class, "Swerve_Pod2motor");
         SwervePod3motor = hardwareMap.get(DcMotor.class, "Swerve_Pod3motor");
         SwervePod4motor = hardwareMap.get(DcMotor.class, "Swerve_Pod4motor");
-        IntakeLift = hardwareMap.get(DcMotor.class, "IntakeLift");
+        IntakeLiftLeft = hardwareMap.get(DcMotor.class, "IntakeLiftLeft");
+        IntakeLiftRight = hardwareMap.get(DcMotor.class, "IntakeLiftRight");
         IntakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
         LiftMotor = hardwareMap.get(DcMotor.class, "LiftMotor");
 
@@ -102,31 +105,38 @@ public class Swerve_Test extends LinearOpMode {
         SwervePod2motor.setDirection(DcMotor.Direction.REVERSE);
         SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
         SwervePod4motor.setDirection(DcMotor.Direction.FORWARD);
-        IntakeLift.setDirection(DcMotor.Direction.REVERSE);
+        IntakeLiftRight.setDirection(DcMotor.Direction.REVERSE);
+        IntakeLiftLeft.setDirection(DcMotor.Direction.FORWARD);
         IntakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         SwervePod1motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod2motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod3motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SwervePod4motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        IntakeLiftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        IntakeLiftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         SwervePod1motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod2motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod3motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SwervePod4motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        IntakeLiftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        IntakeLiftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double SwervePod1Position = 0.5;
         double SwervePod2Position = 0.5;
         double SwervePod3Position = 0.5;
         double SwervePod4Position = 0.5;
-        double Flipper1Position = 0.1;
-        double Flipper2Position = 0.9;
+        double CubeKnockLeftPosition = 0.92;
+        double CubeKnockRightPosition = 0.13;
+        double ScoreFlipperPosition = 0.2;
+        ScoreFlipper.setPosition(ScoreFlipperPosition);
         SwervePod2.setPosition(SwervePod2Position);
         SwervePod1.setPosition(SwervePod1Position);
         SwervePod3.setPosition(SwervePod3Position);
         SwervePod4.setPosition(SwervePod4Position);
-        Flipper1.setPosition(Flipper1Position);
-        Flipper2.setPosition(Flipper2Position);
+        cubeKnockRight.setPosition(CubeKnockRightPosition);
+        cubeKnockLeft.setPosition(CubeKnockLeftPosition);
         //IntakeSlide.setPosition(IntakePosition);
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");
@@ -139,6 +149,8 @@ public class Swerve_Test extends LinearOpMode {
             SwervePod3motor.setPower(-gamepad1.left_stick_y);
             SwervePod4motor.setPower(-gamepad1.left_stick_y);
             LiftMotor.setPower(-gamepad2.left_stick_y);
+            IntakeLiftLeft.setPower(-gamepad2.right_stick_y);
+            IntakeLiftRight.setPower(-gamepad2.right_stick_y);
 
             if (currentLatchIndex == 0) {
                 SwervePod1motor.setDirection(DcMotor.Direction.REVERSE);
@@ -151,12 +163,14 @@ public class Swerve_Test extends LinearOpMode {
                 SwervePod3motor.setDirection(DcMotor.Direction.FORWARD);
                 SwervePod4motor.setDirection(DcMotor.Direction.REVERSE);//changed
             }
-            if(gamepad2.a){
-                liftTest(1200);
-            }
-            if(gamepad2.b){
-                liftTest(500);
-            }
+//            if(gamepad2.a){
+//                liftTestRight(700);
+//                liftTestLeft(700);
+//            }
+//            if(gamepad2.b){
+//                liftTestRight(150);
+//                liftTestLeft(150);
+//            }
             if(gamepad1.dpad_up){
                 IntakeMotor.setPower(0.75);
             }
@@ -176,44 +190,65 @@ public class Swerve_Test extends LinearOpMode {
                 SwervePod4.setPosition(0.5);
                 currentLatchIndex = 0 % Latch.length;
             }
-            if (gamepad1.x) {//
+            if (gamepad1.x) {//turn
                 SwervePod1.setPosition(0.8);
                 SwervePod2.setPosition(0.2);
                 SwervePod3.setPosition(0.8);
                 SwervePod4.setPosition(0.2);
                 currentLatchIndex = 1 % Latch.length;
             }
-            if (gamepad1.y) {//
+            if (gamepad1.y) {//45 degree to spin
                 SwervePod1.setPosition(0.68);
                 SwervePod2.setPosition(0.35);
                 SwervePod3.setPosition(0.68);
                 SwervePod4.setPosition(0.35);
                 currentLatchIndex = 0 % Latch.length;
             }
-            if (gamepad1.b) {//
+            if (gamepad1.b) {//turn
                 SwervePod1.setPosition(0.8);
                 SwervePod2.setPosition(0.2);
                 SwervePod3.setPosition(0.8);
                 SwervePod4.setPosition(0.2);
                 currentLatchIndex = 1 % Latch.length;
             }
-            if (gamepad1.right_bumper) {//
+            if (gamepad1.right_bumper) {//45 to the right
                 SwervePod1.setPosition(0.35);
                 SwervePod2.setPosition(0.35);
                 SwervePod3.setPosition(0.35);
                 SwervePod4.setPosition(0.35);
                 currentLatchIndex = 0 % Latch.length;
             }
-            if (gamepad1.left_bumper) {//checked
+            if (gamepad1.left_bumper) {//45 to the left
                 SwervePod1.setPosition(0.685);
                 SwervePod2.setPosition(0.68);
                 SwervePod3.setPosition(0.68);
                 SwervePod4.setPosition(0.685);
                 currentLatchIndex = 0 % Latch.length;
             }
+            if(gamepad2.dpad_up){
+                //scoreLift(-240);
+            }
+            if(gamepad2.dpad_down){
+               // scoreLift(360);
+            }
+            if(gamepad2.dpad_left){
+               // scoreLift(10);
+            }
+            if(gamepad2.right_bumper){
+                ScoreFlipper.setPosition(0.2);
+//                cubeKnockRight.setPosition(0.80);
+//                cubeKnockLeft.setPosition(0.25);
+            }
+            if(gamepad2.left_bumper){
+                ScoreFlipper.setPosition(0.7);
+//                cubeKnockLeft.setPosition(0.92);
+//                cubeKnockRight.setPosition(0.13);
+            }
+            if(gamepad2.dpad_right){
 
+            }
             RobotLog.i("RF9958  –Runtime: " + runtime.seconds()
-                    + "  RF9958 - lift encoder " + IntakeLift.getCurrentPosition());
+                    + "  RF9958 - lift encoder " + IntakeLiftRight.getCurrentPosition());
 //            if(gamepad1.right_stick_x >= -0.1 || gamepad1.right_stick_x <= 0.1) {
 //                SwervePod1.setPosition(gamepad1.right_stick_x + 1 * 0.5);
 //            }
@@ -231,29 +266,51 @@ public class Swerve_Test extends LinearOpMode {
 //         }
         }
     }
-    public void liftTest(int target){
+
+    public void liftTestLeft(int target){
         //Sets the new target position for the glyph lifter
         // RightLiftMotor.setTargetPosition(target);
-        IntakeLift.setTargetPosition(target);
+        IntakeLiftLeft.setTargetPosition(target);
         //Turns on RUN_TO_POSITION
         // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        IntakeLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        IntakeLiftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //If statement that ask if the motor is busy
-        if( IntakeLift.isBusy()){
+        if( IntakeLiftLeft.isBusy()){
             //If statement that checks if the motors current position is more then the target
-            if( IntakeLift.getCurrentPosition() > target){
+            if( IntakeLiftLeft.getCurrentPosition() > target){
                 //If the current position is more than the target, set motor power to 40%
                 // RightLiftMotor.setPower(0.45);
-                IntakeLift.setPower(0.25);
+                IntakeLiftLeft.setPower(0.25);
             }
             //If statement that checks if the motors current position is less then the target
-            else if( IntakeLift.getCurrentPosition() < target){
+            else if( IntakeLiftLeft.getCurrentPosition() < target){
                 //If the current position is more than the target, set motor power to 60%
                 // RightLiftMotor.setPower(0.5);
-                IntakeLift.setPower(0.25);
+                IntakeLiftLeft.setPower(0.25);
             }
-            sleep(250l);
-            IntakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+    }
+    public void liftTestRight(int target){
+        //Sets the new target position for the glyph lifter
+        // RightLiftMotor.setTargetPosition(target);
+        IntakeLiftRight.setTargetPosition(target);
+        //Turns on RUN_TO_POSITION
+        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        IntakeLiftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //If statement that ask if the motor is busy
+        if( IntakeLiftRight.isBusy()){
+            //If statement that checks if the motors current position is more then the target
+            if( IntakeLiftRight.getCurrentPosition() > target){
+                //If the current position is more than the target, set motor power to 40%
+                // RightLiftMotor.setPower(0.45);
+                IntakeLiftRight.setPower(0.25);
+            }
+            //If statement that checks if the motors current position is less then the target
+            else if( IntakeLiftRight.getCurrentPosition() < target){
+                //If the current position is more than the target, set motor power to 60%
+                // RightLiftMotor.setPower(0.5);
+                IntakeLiftRight.setPower(0.25);
+            }
         }
     }
 }
