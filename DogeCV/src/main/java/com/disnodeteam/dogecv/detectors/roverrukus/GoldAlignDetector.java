@@ -112,7 +112,7 @@ public class GoldAlignDetector extends DogeCVDetector {
             Imgproc.putText(displayMat, "Chosen", bestRect.tl(),0,1,new Scalar(255,255,255));
 
             // Set align X pos
-            xPos = bestRect.x + (bestRect.width / 2);
+            xPos = bestRect.y + (bestRect.width / 2);
             goldXPos = xPos;
 
             // Draw center point
