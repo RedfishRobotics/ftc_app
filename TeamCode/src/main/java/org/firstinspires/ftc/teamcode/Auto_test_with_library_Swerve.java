@@ -168,6 +168,9 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
                 autoSwerve.straightPosition();
                 sleep(250);
                 encoderDrive(0.4, 22,4, false, 2, true, false, 0);
+                sleep(250);
+                autoSwerve.turnPosition();
+                encoderDrive(0.4, 6, 4, false, 2, true, false, 0);
                 //sleep(250);
                 //autoSwerve.leftKnock();
             } else if(goldMineralPosition == 2){
@@ -177,6 +180,9 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
                 autoSwerve.SwervePod4.setPosition(0.6);
                 sleep(250);
                 encoderDrive(0.4, 20,4, false, 2, true, false, 0);
+                sleep(250);
+                autoSwerve.straightPosition();
+                encoderDrive(0.4, 4, 2, false, 2, true, false, 0);
             } else if(goldMineralPosition == 3){
                 autoSwerve.spinPosition();
                 sleep(250);
@@ -185,11 +191,16 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
                 autoSwerve.straightPosition();
                 sleep(250);
                 encoderDrive(0.4, 20,4, false, 2, true, false, 0);
+                sleep(250);
+                autoSwerve.turnPosition();
+                encoderDrive(0.4, 6, 4, false, 2, true, false, 0);
                 //sleep(250);
                 //autoSwerve.rightKnock();
             } else if(goldMineralPosition == 0){
                 encoderDrive(0.4, 20,4, false, 2, true, false, 0);
             }
+
+
 
             stop();
             telemetry.update();
