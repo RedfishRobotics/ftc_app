@@ -62,8 +62,8 @@ public class Auto_Library extends LinearOpMode {
     public Orientation angles;
     public Acceleration gravity;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // The encoder ticks per revolution for andymark 40 motors
-    static final double     DRIVE_GEAR_REDUCTION    = 1.5 ;     // The gear reduction on our motors
+    static final double     COUNTS_PER_MOTOR_REV    = 537.6;    // The encoder ticks per revolution for andymark 40 motors
+    static final double     DRIVE_GEAR_REDUCTION    = 1;     // The gear reduction on our motors
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // The diameter to get the circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);// The math to get the number of inches per rotation of the motors
@@ -87,72 +87,7 @@ public class Auto_Library extends LinearOpMode {
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
 
-
         // set references for config
-
-        leftFrontDrive =  hardwareMap.get(DcMotor.class, "Left_FM");
-        leftRearDrive =  hardwareMap.get(DcMotor.class, "Left_RM");
-        rightFrontDrive =  hardwareMap.get(DcMotor.class, "Right_FM");
-        rightRearDrive =  hardwareMap.get(DcMotor.class, "Right_RM");
-        RightLiftMotor = hardwareMap.get(DcMotor.class, "RightLiftMotor");
-        LeftLiftMotor = hardwareMap.get(DcMotor.class, "LeftLiftMotor");
-        RightIntakeMotor = hardwareMap.get(DcMotor.class, "RightIntakeMotor");
-        LeftIntakeMotor = hardwareMap.get(DcMotor.class, "LeftIntakeMotor");
-        rightFlip = hardwareMap.get(Servo.class, "Right_Flip");
-        leftFlip = hardwareMap.get(Servo.class, "Left_Flip");
-        PITA_1 = hardwareMap.get(CRServo.class, "Intake_Stop_Right");
-        PITA_2 = hardwareMap.get(CRServo.class, "Intake_Stop_Left");
-        ColorArmTurn = hardwareMap.get(Servo.class, "colorArmTurn");
-        ColorSensorArm = hardwareMap.get(Servo.class , "colorSensorArm");
-        relicPivot = hardwareMap.get(Servo.class, "Relic_Pivot");
-        glyphStop = hardwareMap.get(Servo.class, "Glyph_Stop");
-        ColorArmTurn = hardwareMap.get(Servo.class, "colorArmTurn");
-        ColorSensorArm = hardwareMap.get(Servo.class , "colorSensorArm");
-
-        imu = hardwareMap.get(BNO055IMU.class, "IMU");
-        sensorColor = hardwareMap.get(ColorSensor.class, "sensorColor");
-        magneticSwitch = hardwareMap.get(DigitalChannel.class, "sensor_magnetic");
-
-        // set the digital channel to input.
-        magneticSwitch.setMode(DigitalChannel.Mode.INPUT);
-
-        // set the direction of the motor
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightRearDrive.setDirection(DcMotor.Direction.FORWARD);
-        RightLiftMotor.setDirection(DcMotor.Direction.FORWARD);
-        LeftLiftMotor.setDirection(DcMotor.Direction.REVERSE);
-        RightIntakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        LeftIntakeMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftRearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightRearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RightIntakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LeftIntakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        RightIntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LeftIntakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        RightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LeftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        double rightFlipPosition = 1.0;
-        double IntakeStopPosition = 0.05;
-        double leftFlipPosition = 0.0;
-        double colorArmTurnPosition = 0.88;
-        double colorSensorPosition = 0.77;
-
-
-        ColorArmTurn.setPosition(colorArmTurnPosition);
-        ColorSensorArm.setPosition(colorSensorPosition);
-        leftFlip.setPosition(leftFlipPosition);
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = hardwareMap.get(BNO055IMU.class, "IMU");
         imu.initialize(parameters);
