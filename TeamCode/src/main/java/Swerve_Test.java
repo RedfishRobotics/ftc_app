@@ -62,36 +62,36 @@ public class Swerve_Test extends LinearOpMode {
     @Override
     public void runOpMode() {
         swerveLibrary.init(hardwareMap);
+
         waitForStart();
 
         while (opModeIsActive()) {
-            swerveLibrary.SwervePod1motor.setPower(-gamepad1.right_stick_y);
-            swerveLibrary.SwervePod2motor.setPower(-gamepad1.right_stick_y);
-            swerveLibrary.SwervePod3motor.setPower(-gamepad1.left_stick_y);
-            swerveLibrary.SwervePod4motor.setPower(-gamepad1.left_stick_y);
-            swerveLibrary.LiftMotor.setPower(-gamepad2.left_stick_y);
-            swerveLibrary.IntakeLiftLeft.setPower(-gamepad2.right_stick_y);
-            swerveLibrary.IntakeLiftRight.setPower(-gamepad2.right_stick_y);
+            drivetrainSmooth(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
+            swerveLibrary.intakeLift.setPower(-gamepad2.right_stick_y);
+           //swerveLibrary.LiftMotor.setPower(-gamepad2.left_stick_y);
+//            swerveLibrary.IntakeLiftLeft.setPower(-gamepad2.right_stick_y);
+//            swerveLibrary.IntakeLiftRight.setPower(-gamepad2.right_stick_y);
 
-//            if(gamepad2.a){
-//                liftTestRight(700);
-//                liftTestLeft(700);
-//            }
-//            if(gamepad2.b){
-//                liftTestRight(150);
-//                liftTestLeft(150);
-//            }
+            if(gamepad2.right_bumper){
+                liftTestRight(0);
+                //liftTestLeft(0);
+            }
+            if(gamepad2.left_bumper){
+                liftTestRight(1100);
+                //liftTestLeft(150);
+            }
+
             if(gamepad1.dpad_up){
-                swerveLibrary.IntakeMotor.setPower(0.75);
+                swerveLibrary.IntakeMotor.setPower(-0.75);
             }
             if(gamepad1.dpad_left){
                 swerveLibrary.IntakeMotor.setPower(0.0);
             }
             if(gamepad1.dpad_down){
-                swerveLibrary.IntakeMotor.setPower(-0.5);
+                swerveLibrary.IntakeMotor.setPower(0.25);
             }
             if(gamepad1.dpad_right){
-                swerveLibrary.IntakeMotor.setPower(0.25);
+                swerveLibrary.IntakeMotor.setPower(-0.5);
             }
             if (gamepad1.a) { //Middle
                 swerveLibrary.straightPosition();
@@ -113,23 +113,38 @@ public class Swerve_Test extends LinearOpMode {
             }
             if(gamepad2.dpad_up){
                 //scoreLift(-240);
+                intakeLiftTest(10);
             }
             if(gamepad2.dpad_down){
                // scoreLift(360);
+                intakeLiftTest(300);
             }
             if(gamepad2.dpad_left){
                // scoreLift(10);
+                intakeLiftTest(615);
             }
-            if(gamepad2.right_bumper){
-                swerveLibrary.ScoreFlipper.setPosition(0.2);
-//                cubeKnockRight.setPosition(0.80);
-//                cubeKnockLeft.setPosition(0.25);
+            if(gamepad2.a){//down
+                swerveLibrary.intakeRightLift.setPosition(0.0);
+                swerveLibrary.intakeLeftLift.setPosition(1.0);
             }
-            if(gamepad2.left_bumper){
-                swerveLibrary.ScoreFlipper.setPosition(0.7);
-//                cubeKnockLeft.setPosition(0.92);
-//                cubeKnockRight.setPosition(0.13);
+            if(gamepad2.b){//middle
+                swerveLibrary.intakeRightLift.setPosition(0.5);
+                swerveLibrary.intakeLeftLift.setPosition(0.5);
             }
+            if(gamepad2.x){//up
+                swerveLibrary.intakeRightLift.setPosition(1.0);
+                swerveLibrary.intakeLeftLift.setPosition(0.0);
+            }
+//            if(gamepad2.right_bumper){
+//                swerveLibrary.ScoreFlipper.setPosition(0.2);
+////                cubeKnockRight.setPosition(0.80);
+////                cubeKnockLeft.setPosition(0.25);
+//            }
+//            if(gamepad2.left_bumper){
+//                swerveLibrary.ScoreFlipper.setPosition(0.7);
+////                cubeKnockLeft.setPosition(0.92);
+////                cubeKnockRight.setPosition(0.13);
+//            }
             if(gamepad2.dpad_right){
 
             }
@@ -153,26 +168,26 @@ public class Swerve_Test extends LinearOpMode {
         }
     }
 
-    public void liftTestLeft(int target){
+    public void intakeLiftTest(int target){
         //Sets the new target position for the glyph lifter
         // RightLiftMotor.setTargetPosition(target);
-        swerveLibrary.IntakeLiftLeft.setTargetPosition(target);
+        swerveLibrary.LiftMotor.setTargetPosition(target);
         //Turns on RUN_TO_POSITION
         // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        swerveLibrary.IntakeLiftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        swerveLibrary.LiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //If statement that ask if the motor is busy
-        if( swerveLibrary.IntakeLiftLeft.isBusy()){
+        if( swerveLibrary.LiftMotor.isBusy()){
             //If statement that checks if the motors current position is more then the target
-            if( swerveLibrary.IntakeLiftLeft.getCurrentPosition() > target){
+            if( swerveLibrary.LiftMotor.getCurrentPosition() > target){
                 //If the current position is more than the target, set motor power to 40%
                 // RightLiftMotor.setPower(0.45);
-                swerveLibrary.IntakeLiftLeft.setPower(0.25);
+                swerveLibrary.LiftMotor.setPower(0.10);
             }
             //If statement that checks if the motors current position is less then the target
-            else if( swerveLibrary.IntakeLiftLeft.getCurrentPosition() < target){
+            else if( swerveLibrary.LiftMotor.getCurrentPosition() < target){
                 //If the current position is more than the target, set motor power to 60%
                 // RightLiftMotor.setPower(0.5);
-                swerveLibrary.IntakeLiftLeft.setPower(0.25);
+                swerveLibrary.LiftMotor.setPower(0.2);
             }
         }
     }
@@ -189,14 +204,22 @@ public class Swerve_Test extends LinearOpMode {
             if( swerveLibrary.IntakeLiftRight.getCurrentPosition() > target){
                 //If the current position is more than the target, set motor power to 40%
                 // RightLiftMotor.setPower(0.45);
-                swerveLibrary.IntakeLiftRight.setPower(0.25);
+                swerveLibrary.IntakeLiftRight.setPower(0.45);
             }
             //If statement that checks if the motors current position is less then the target
             else if( swerveLibrary.IntakeLiftRight.getCurrentPosition() < target){
                 //If the current position is more than the target, set motor power to 60%
                 // RightLiftMotor.setPower(0.5);
-                swerveLibrary.IntakeLiftRight.setPower(0.25);
+                swerveLibrary.IntakeLiftRight.setPower(0.45);
             }
         }
+    }
+    public void drivetrainSmooth(double leftPower, double rightPower){
+        double smoothedLeftPower = leftPower *leftPower* leftPower;
+        double smoothedRightPower = rightPower * rightPower* rightPower;
+        swerveLibrary.SwervePod1motor.setPower(smoothedRightPower);
+        swerveLibrary.SwervePod2motor.setPower(smoothedRightPower);
+        swerveLibrary.SwervePod3motor.setPower(smoothedLeftPower);
+        swerveLibrary.SwervePod4motor.setPower(smoothedLeftPower);
     }
 }
