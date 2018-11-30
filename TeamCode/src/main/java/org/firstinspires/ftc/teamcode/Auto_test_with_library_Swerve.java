@@ -208,43 +208,44 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
             }
     }
 
-    public  void webcamScan(){
+    public  void webcamScan(){//The method for the webcam sampling for the gold mineral
         while(opModeIsActive()){
-            autoSwerve.WebcamPan.setPosition(0.75);
+            autoSwerve.WebcamPan.setPosition(0.75);//turn the pan servo to the left position
             sleep(1000);
-            if(detector.getAligned()){
-                telemetry.addLine("left");
+            if(detector.getAligned()){//scans from the gold mineral
+                telemetry.addLine("left");//if seen, the telemetry value returns the line left
                 telemetry.update();
-                goldMineralPosition = 1;
+                goldMineralPosition = 1;//if seen, returns the left value of 1
                 sleep(500);
-                break;
+                break;//breaks from while loop
             }
             else{
-                autoSwerve.WebcamPan.setPosition(0.5);
+                autoSwerve.WebcamPan.setPosition(0.5);//if not seen the pan servo turns to the center position
+            }
+            sleep(1000);
+            if(detector.getAligned()){//scans from the gold mineral
+                telemetry.addLine("center");//if seen, the telemetry value returns the line center
+                telemetry.update();
+                goldMineralPosition = 2;//if seen, returns the center value of 2
+                sleep(500);
+                break;//breaks from while loop
+            }
+            else{
+                autoSwerve.WebcamPan.setPosition(0.29);//if not seen the pan servo turns to the center position
             }
             sleep(1000);
             if(detector.getAligned()){
-                telemetry.addLine("center");
+                telemetry.addLine("right");//if seen, the telemetry value returns the line right
                 telemetry.update();
-                goldMineralPosition = 2;
+                goldMineralPosition = 3;//if seen, returns the right value of 3
                 sleep(500);
-                break;
+                break;//breaks from while loop
             }
             else{
-                autoSwerve.WebcamPan.setPosition(0.29);
-            }
-            sleep(1000);
-            if(detector.getAligned()){
-                telemetry.addLine("right");
+                telemetry.addLine("Defalt");//if none of the positions return as true, the telemetry value returns the line default
                 telemetry.update();
-                goldMineralPosition = 3;
-                sleep(500);
-                break;
-            }
-            else{
-                telemetry.addLine("Defalt");
-                telemetry.update();
-                goldMineralPosition = 0;
+                goldMineralPosition = 0;//if none of the positions return as true, returns the default value of 0
+                break;//breaks from while loop
             }
         }
     }
