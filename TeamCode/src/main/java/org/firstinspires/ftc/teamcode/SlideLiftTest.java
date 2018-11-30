@@ -29,8 +29,8 @@ public class SlideLiftTest extends LinearOpMode {
         liftSlideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftSlideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        liftSlideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftSlideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        liftSlideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        liftSlideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         waitForStart();
 
@@ -45,22 +45,22 @@ public class SlideLiftTest extends LinearOpMode {
 
             telemetry.update();
 
-            if(gamepad1.y){
-
-            }
-            if(gamepad1.x){
-                LiftTest(0);
-            }
-            if(gamepad1.b){
-                LiftTest(2200);
-                sleep(1000);
-                while(magneticSwitch.getState() == true){
-                    flipperServo.setPower(0.75);
-                }
-                flipperServo.setPower(0);
-            }
-//            liftSlideLeft.setPower(-gamepad1.right_stick_y);
-//            liftSlideRight.setPower(-gamepad1.right_stick_y);
+//            if(gamepad1.y){
+//
+//            }
+//            if(gamepad1.x){
+//                LiftTest(0);
+//            }
+//            if(gamepad1.b){
+//                LiftTest(3600);
+//                sleep(2000);
+//                while(magneticSwitch.getState() == true){
+//                    flipperServo.setPower(0.75);
+//                }
+//                flipperServo.setPower(0);
+//            }
+            liftSlideLeft.setPower(-gamepad1.right_stick_y);
+            liftSlideRight.setPower(-gamepad1.right_stick_y);
         }
     }
     public void LiftTest(int target){
