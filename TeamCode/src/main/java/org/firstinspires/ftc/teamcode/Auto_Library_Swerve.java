@@ -86,6 +86,7 @@ public class Auto_Library_Swerve extends LinearOpMode {
         SwervePod4 = hardwareMap.get(Servo.class, "Swerve_Pod4");
         cubeKnockLeft = hardwareMap.get(Servo.class, "knockleft");
         cubeKnockRight = hardwareMap.get(Servo.class, "knockright");
+        WebcamPan = hardwareMap.get(Servo.class, "webcamPan");
 //        IntakeSlide = hardwareMap.get(DcMotor.class, "IntakeSlide");
 
         SwervePod1motor = hardwareMap.get(DcMotor.class, "Swerve_Pod1motor");

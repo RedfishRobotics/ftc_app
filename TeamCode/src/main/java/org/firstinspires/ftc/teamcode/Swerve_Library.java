@@ -15,6 +15,7 @@ public class Swerve_Library extends LinearOpMode {
     public Servo SwervePod2 = null;
     public Servo SwervePod3 = null;
     public Servo SwervePod4 = null;
+    public Servo WebcamPan = null;
     public CRServo ScoreFlipper = null;
     public Servo cubeKnockRight = null;
     public  Servo cubeKnockLeft = null;
@@ -56,6 +57,7 @@ public class Swerve_Library extends LinearOpMode {
         intakeLift = hardwareMap.get(CRServo.class, "IntakeLift");
         intakeRightLift = hardwareMap.get(Servo.class, "IntakeRightLift");
         intakeLeftLift = hardwareMap.get(Servo.class, "IntakeLeftLift");
+        WebcamPan = hardwareMap.get(Servo.class, "webcamPan");
 //        IntakeSlide = hardwareMap.get(DcMotor.class, "IntakeSlide");
 
         SwervePod1motor = hardwareMap.get(DcMotor.class, "Swerve_Pod1motor");
