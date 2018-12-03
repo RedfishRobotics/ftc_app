@@ -113,15 +113,18 @@ public class Swerve_Test extends LinearOpMode {
             }
             if(gamepad2.dpad_up){
                 //scoreLift(-240);
-                intakeLiftTest(10);
+//                intakeLiftTest(10);
+                swerveLibrary.WebcamPan.setPosition(1.0);
             }
             if(gamepad2.dpad_down){
                // scoreLift(360);
-                intakeLiftTest(300);
+//                intakeLiftTest(300);
+                swerveLibrary.WebcamPan.setPosition(0.15);
             }
             if(gamepad2.dpad_left){
                // scoreLift(10);
-                intakeLiftTest(615);
+//                intakeLiftTest(615);
+                swerveLibrary.WebcamPan.setPosition(0.66);
             }
             if(gamepad2.a){//down
                 swerveLibrary.intakeRightLift.setPosition(0.0);
