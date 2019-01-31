@@ -112,11 +112,11 @@ public class GoldAlignDetector extends DogeCVDetector {
             Imgproc.putText(displayMat, "Chosen", bestRect.tl(),0,1,new Scalar(255,255,255));
 
             // Set align X pos
-            xPos = bestRect.y + (bestRect.width / 2);
+            xPos = bestRect.x + (bestRect.width / 2);
             goldXPos = xPos;
 
             // Draw center point
-            Imgproc.circle(displayMat, new Point( xPos, bestRect.y + (bestRect.height / 2)), 5, new Scalar(0,255,0),2);
+            Imgproc.circle(displayMat, new Point( xPos, bestRect.x + (bestRect.height / 2)), 5, new Scalar(0,255,0),2);
 
             // Check if the mineral is aligned
             if(xPos < alignXMax && xPos > alignXMin){
