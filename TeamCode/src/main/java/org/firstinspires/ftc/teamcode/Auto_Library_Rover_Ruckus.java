@@ -1,61 +1,46 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import java.util.Locale;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import com.qualcomm.robotcore.hardware.ColorSensor;
-
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-
-public class Auto_Library extends LinearOpMode {
+public class Auto_Library_Rover_Ruckus extends LinearOpMode {
 
     VuforiaLocalizer vuforia;
     public ElapsedTime runtime = new ElapsedTime();
     public DcMotor leftFrontDrive = null;
     public DcMotor leftRearDrive = null;
     public DcMotor rightFrontDrive = null;
+    public CRServo intake = null;
+    public Servo panServo = null;
     public DcMotor rightRearDrive = null;
-    public DcMotor RightLiftMotor = null;
-    public DcMotor LeftLiftMotor = null;
-    public DcMotor RightIntakeMotor = null;
-    public DcMotor LeftIntakeMotor = null;
-    public Servo rightFlip = null;
-    public Servo leftFlip = null;
-    public Servo IntakeStop = null;
-    public Servo ColorArmTurn = null;
-    public Servo ColorSensorArm = null;
-    public CRServo PITA_1 = null;
-    public CRServo PITA_2 = null;
-    public Servo glyphStop = null;
-    public Servo relicPivot = null;
-    public ColorSensor sensorColor;
-    public DigitalChannel magneticSwitch;
+    public DcMotor intakeMotor = null;
+    public DcMotor intakeSlideMotor = null;
+    public DcMotor rightLifter = null;
+    public DcMotor leftLifter = null;
+
+
     public BNO055IMU imu;
     public OpenGLMatrix lastLocation = null;
 
@@ -92,6 +77,28 @@ public class Auto_Library extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "IMU");
         imu.initialize(parameters);
 
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "Left_FM");
+        leftRearDrive = hardwareMap.get(DcMotor.class, "Left_RM");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "Right_FM");
+        rightRearDrive = hardwareMap.get(DcMotor.class, "Right_RM");
+        rightLifter = hardwareMap.get(DcMotor.class, "Right_Lifter");
+        leftLifter = hardwareMap.get(DcMotor.class, "Left_Lifter");
+        intakeMotor = hardwareMap.get(DcMotor.class, "Intake_Motor");
+        intakeSlideMotor = hardwareMap.get(DcMotor.class, "Slide_Motor");
+        intake = hardwareMap.get(CRServo.class, "Intake_Servo");
+
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftRearDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightLifter.setDirection(DcMotor.Direction.FORWARD);
+        leftLifter.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        intakeSlideMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        intakeSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void gyroTurn (  double speed, double angle, double coefficient) {
@@ -449,81 +456,72 @@ public class Auto_Library extends LinearOpMode {
 
         }
     }
-    void lift(int target){
-        //Set the arm motors new target position
-        RightLiftMotor.setTargetPosition(target);
-        LeftLiftMotor.setTargetPosition(target);
-        //Turn on RUN_TO_POSITION
-        LeftLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while(opModeIsActive() && RightLiftMotor.isBusy()){
-            if(target > RightLiftMotor.getCurrentPosition()){//If the target is below the current value, set motor power to 20%
-                RightLiftMotor.setPower(0.2);
-                LeftLiftMotor.setPower(0.2);
+    public void intakeStop(){
+        intake.setPower(0.0);
+    }
+    public void intakeIn(){
+        intake.setPower(0.8);
+    }
+    public void intakeOut(){
+        intake.setPower(-0.4);
+    }
+    public void lifterTucked(){
+        liftTestLeft(0);
+        liftTestRight(0);
+    }
+    public void lifterScoring(){
+        liftTestLeft(775);
+        liftTestRight(550);
+    }
+    public void lifterDown(){
+        liftTestLeft(1750);
+        liftTestRight(1650);
+    }
+    public void liftTestRight(int target){
+        //Sets the new target position for the glyph lifter
+        // RightLiftMotor.setTargetPosition(target);
+        rightLifter.setTargetPosition(target);
+        //Turns on RUN_TO_POSITION
+        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //If statement that ask if the motor is busy
+        if( rightLifter.isBusy()){
+            //If statement that checks if the motors current position is more then the target
+            if( rightLifter.getCurrentPosition() > target){
+                //If the current position is more than the target, set motor power to 40%
+                // RightLiftMotor.setPower(0.45);
+                rightLifter.setPower(0.4);
             }
-            else if(target < RightLiftMotor.getCurrentPosition()){//If the target is above the current value, set motor power to 25%
-                RightLiftMotor.setPower(0.25);
-                LeftLiftMotor.setPower(0.25);
+            //If statement that checks if the motors current position is less then the target
+            else if( rightLifter.getCurrentPosition() < target){
+                //If the current position is more than the target, set motor power to 60%
+                // RightLiftMotor.setPower(0.5);
+                rightLifter.setPower(0.15);
+
             }
         }
     }
-    void jewelKnockRight(int sleepPerTurn){
-        double colorArmTurnPosition = 0.59;
-        while(ColorArmTurn.getPosition() < 0.7){
-            colorArmTurnPosition += 0.02;
-            ColorArmTurn.setPosition(colorArmTurnPosition);
-            sleep(sleepPerTurn);
+    public void liftTestLeft(int target){
+        //Sets the new target position for the glyph lifter
+        // RightLiftMotor.setTargetPosition(target);
+        leftLifter.setTargetPosition(target);
+        //Turns on RUN_TO_POSITION
+        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //If statement that ask if the motor is busy
+        if( leftLifter.isBusy()){
+            //If statement that checks if the motors current position is more then the target
+            if( leftLifter.getCurrentPosition() > target){
+                //If the current position is more than the target, set motor power to 40%
+                // RightLiftMotor.setPower(0.45);
+                leftLifter.setPower(0.4);
+            }
+            //If statement that checks if the motors current position is less then the target
+            else if( leftLifter.getCurrentPosition() < target){
+                //If the current position is more than the target, set motor power to 60%
+                // RightLiftMotor.setPower(0.5);
+                leftLifter.setPower(0.15);
+            }
         }
-    }
-    void jewelKnockLeft(int sleepPerTurn){
-        double colorArmTurnPosition = 0.59;
-        while(ColorArmTurn.getPosition() > 0.45){
-            colorArmTurnPosition -= 0.02;
-            ColorArmTurn.setPosition(colorArmTurnPosition);
-            sleep(sleepPerTurn);
-        }
-    }
-    void intakeDown(){
-        PITA_1.setPower(0.8);
-        PITA_2.setPower(-0.8);
-        sleep(2500);
-        PITA_1.setPower(0);
-        PITA_2.setPower(0);
-    }
-    public void flipperFlatwithStop() {//flat
-        glyphStop.setPosition(1.0);
-        sleep(350);
-        glyphStop.setPosition(0.9);
-        sleep(200);
-        leftFlip.setPosition(0.15);
-        rightFlip.setPosition(0.85);
-    }
-    public void flipperDump() {
-        glyphStop.setPosition(0.85);
-        sleep(250);
-        leftFlip.setPosition(0.7);
-        rightFlip.setPosition(0.3);
-    }
-    public void flipperDown() {
-        leftFlip.setPosition(0.0);
-        rightFlip.setPosition(1.0);
-        sleep(350);
-        glyphStop.setPosition(0.3);
-    }
-    public void runIntakeForward() {
-        RightIntakeMotor.setPower(0.8);
-        LeftIntakeMotor.setPower(0.8);
-    }
-    public void stopIntake() {
-        RightIntakeMotor.setPower(0);
-        LeftIntakeMotor.setPower(0);
-    }
-    public void runIntakeHalf() {
-        RightIntakeMotor.setPower(0.6);
-        LeftIntakeMotor.setPower(0.6);
-    }
-    public void runIntakeBackward() {
-        RightIntakeMotor.setPower(-0.55);
-        LeftIntakeMotor.setPower(-0.55);
     }
 }

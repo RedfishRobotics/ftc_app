@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -19,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
@@ -38,9 +36,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 @Autonomous(name="Auto library Test Swerve", group="Linear Opmode")
 
-public class Auto_test_with_library_Swerve extends LinearOpMode {
-    Auto_Library autoLibrary = new Auto_Library();
-    Auto_Library_Swerve autoSwerve = new Auto_Library_Swerve();
+public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
+    Auto_Library_Rover_Ruckus autoLibrary = new Auto_Library_Rover_Ruckus();
+//    Auto_Library_Swerve autoSwerve = new Auto_Library_Swerve();
 
 
     public MovingAvg gyroErrorAvg = new MovingAvg(30);
@@ -68,7 +66,7 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        autoSwerve.init(hardwareMap);
+//        autoSwerve.init(hardwareMap);
         autoLibrary.init(hardwareMap);
 
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -161,46 +159,31 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
             encoderDrive(0.4, 4,2, false, 2, true, false, 0);
             sleep(500);
             if(goldMineralPosition == 1){
-                autoSwerve.spinPosition();
                 sleep(250);
                 gyroTurn(0.4, 45, 0.011);
                 sleep(250);
-                autoSwerve.straightPosition();
-                sleep(250);
                 encoderDrive(0.4, 22,4, false, 2, true, false, 0);
                 sleep(250);
-                autoSwerve.turnPosition();
                 encoderDrive(0.4, 6, 4, false, 2, true, false, 0);
                 //sleep(250);
                 //autoSwerve.leftKnock();
             } else if(goldMineralPosition == 2){
-                autoSwerve.SwervePod1.setPosition(0.6);
-                autoSwerve.SwervePod2.setPosition(0.6);
-                autoSwerve.SwervePod3.setPosition(0.6);
-                autoSwerve.SwervePod4.setPosition(0.6);
                 sleep(250);
                 encoderDrive(0.4, 20,4, false, 2, true, false, 0);
                 sleep(250);
-                autoSwerve.straightPosition();
                 encoderDrive(0.4, 4, 2, false, 2, true, false, 0);
             } else if(goldMineralPosition == 3){
-                autoSwerve.spinPosition();
                 sleep(250);
                 gyroTurn(0.4, -45, 0.011);
                 sleep(250);
-                autoSwerve.straightPosition();
-                sleep(250);
                 encoderDrive(0.4, 20,4, false, 2, true, false, 0);
                 sleep(250);
-                autoSwerve.turnPosition();
                 encoderDrive(0.4, 6, 4, false, 2, true, false, 0);
                 //sleep(250);
                 //autoSwerve.rightKnock();
             } else if(goldMineralPosition == 0){
                 encoderDrive(0.4, 20,4, false, 2, true, false, 0);
             }
-
-
 
             stop();
             telemetry.update();
@@ -210,7 +193,7 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
 
     public  void webcamScan(){//The method for the webcam sampling for the gold mineral
         while(opModeIsActive()){
-            autoSwerve.WebcamPan.setPosition(0.75);//turn the pan servo to the left position
+            autoLibrary.panServo.setPosition(0.75);//turn the pan servo to the left position
             sleep(1000);
             if(detector.getAligned()){//scans from the gold mineral
                 telemetry.addLine("left");//if seen, the telemetry value returns the line left
@@ -220,7 +203,7 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
                 break;//breaks from while loop
             }
             else{
-                autoSwerve.WebcamPan.setPosition(0.5);//if not seen the pan servo turns to the center position
+                autoLibrary.panServo.setPosition(0.5);//if not seen the pan servo turns to the center position
             }
             sleep(1000);
             if(detector.getAligned()){//scans from the gold mineral
@@ -231,7 +214,7 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
                 break;//breaks from while loop
             }
             else{
-                autoSwerve.WebcamPan.setPosition(0.29);//if not seen the pan servo turns to the center position
+                autoLibrary.panServo.setPosition(0.29);//if not seen the pan servo turns to the center position
             }
             sleep(1000);
             if(detector.getAligned()){
@@ -305,33 +288,33 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
             }
 
             // Determine new target encoder positions, and pass to motor controller
-            newLFTarget = autoSwerve.SwervePod3motor.getCurrentPosition() + (int) (leftDistance * autoLibrary.COUNTS_PER_INCH);
-            newLRTarget = autoSwerve.SwervePod4motor.getCurrentPosition() + (int) (leftDistance * autoLibrary.COUNTS_PER_INCH);
-            newRFTarget = autoSwerve.SwervePod1motor.getCurrentPosition() + (int) (rightDistance * autoLibrary.COUNTS_PER_INCH);
-            newRRTarget = autoSwerve.SwervePod2motor.getCurrentPosition() + (int) (rightDistance * autoLibrary.COUNTS_PER_INCH);
+            newLFTarget = autoLibrary.leftFrontDrive.getCurrentPosition() + (int) (leftDistance * autoLibrary.COUNTS_PER_INCH);
+            newLRTarget = autoLibrary.leftRearDrive.getCurrentPosition() + (int) (leftDistance * autoLibrary.COUNTS_PER_INCH);
+            newRFTarget = autoLibrary.rightFrontDrive.getCurrentPosition() + (int) (rightDistance * autoLibrary.COUNTS_PER_INCH);
+            newRRTarget = autoLibrary.rightRearDrive.getCurrentPosition() + (int) (rightDistance * autoLibrary.COUNTS_PER_INCH);
 
-            while (autoSwerve.SwervePod3motor.getTargetPosition() != newLFTarget) {
-                autoSwerve.SwervePod3motor.setTargetPosition(newLFTarget);
+            while (autoLibrary.leftFrontDrive.getTargetPosition() != newLFTarget) {
+                autoLibrary.leftFrontDrive.setTargetPosition(newLFTarget);
                 sleep(1);
             }
-            while (autoSwerve.SwervePod1motor.getTargetPosition() != newRFTarget) {
-                autoSwerve.SwervePod1motor.setTargetPosition(newRFTarget);
+            while (autoLibrary.rightFrontDrive.getTargetPosition() != newRFTarget) {
+                autoLibrary.rightFrontDrive.setTargetPosition(newRFTarget);
                 sleep(1);
             }
-            while (autoSwerve.SwervePod4motor.getTargetPosition() != newLRTarget) {
-                autoSwerve.SwervePod4motor.setTargetPosition(newLRTarget);
+            while (autoLibrary.leftRearDrive.getTargetPosition() != newLRTarget) {
+                autoLibrary.leftRearDrive.setTargetPosition(newLRTarget);
                 sleep(1);
             }
-            while (autoSwerve.SwervePod2motor.getTargetPosition() != newRRTarget) {
-                autoSwerve.SwervePod2motor.setTargetPosition(newRRTarget);
+            while (autoLibrary.rightRearDrive.getTargetPosition() != newRRTarget) {
+                autoLibrary.rightRearDrive.setTargetPosition(newRRTarget);
                 sleep(1);
             }
 
             // Turn On motors to RUN_TO_POSITION
-            autoSwerve.SwervePod3motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            autoSwerve.SwervePod4motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            autoSwerve.SwervePod1motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            autoSwerve.SwervePod2motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             autoLibrary.runtime.reset();
@@ -340,18 +323,18 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
             curSpeed = Math.min(MINSPEED, speed);
 
             // Set the motors to the starting power
-            autoSwerve.SwervePod3motor.setPower(Math.abs(curSpeed));
-            autoSwerve.SwervePod1motor.setPower(Math.abs(curSpeed));
-            autoSwerve.SwervePod4motor.setPower(Math.abs(curSpeed));
-            autoSwerve.SwervePod2motor.setPower(Math.abs(curSpeed));
+            autoLibrary.leftFrontDrive.setPower(Math.abs(curSpeed));
+            autoLibrary.rightFrontDrive.setPower(Math.abs(curSpeed));
+            autoLibrary.leftRearDrive.setPower(Math.abs(curSpeed));
+            autoLibrary.rightRearDrive.setPower(Math.abs(curSpeed));
 
             // keep looping while we are still active, and there is time left, until at least 1 motor reaches target
             while (opModeIsActive() &&
                     (autoLibrary.runtime.seconds() < timeout) &&
-                    autoSwerve.SwervePod3motor.isBusy() &&
-                    autoSwerve.SwervePod4motor.isBusy() &&
-                    autoSwerve.SwervePod1motor.isBusy() &&
-                    autoSwerve.SwervePod2motor.isBusy()) {
+                    autoLibrary.leftFrontDrive.isBusy() &&
+                    autoLibrary.leftRearDrive.isBusy() &&
+                    autoLibrary.rightFrontDrive.isBusy() &&
+                    autoLibrary.rightRearDrive.isBusy()) {
 
                 // Ramp up motor powers as needed
                 if (curSpeed < speed) {
@@ -389,10 +372,10 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
                 }
 
                 // And rewrite the motor speeds
-                autoSwerve.SwervePod3motor.setPower(Math.abs(leftSpeed));
-                autoSwerve.SwervePod1motor.setPower(Math.abs(rightSpeed));
-                autoSwerve.SwervePod4motor.setPower(Math.abs(leftSpeed));
-                autoSwerve.SwervePod2motor.setPower(Math.abs(rightSpeed));
+                autoLibrary.leftFrontDrive.setPower(Math.abs(leftSpeed));
+                autoLibrary.rightFrontDrive.setPower(Math.abs(rightSpeed));
+                autoLibrary.leftRearDrive.setPower(Math.abs(leftSpeed));
+                autoLibrary.rightRearDrive.setPower(Math.abs(rightSpeed));
 
                 // Allow time for other processes to run.
                 sleep(1);
@@ -401,25 +384,25 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
 
 
             RobotLog.i("DM10337- encoderDrive done" +
-                    "  lftarget: " + newLFTarget + "  lfactual:" + autoSwerve.SwervePod3motor.getCurrentPosition() +
-                    "  lrtarget: " + newLFTarget + "  lractual:" + autoSwerve.SwervePod4motor.getCurrentPosition() +
-                    "  rftarget: " + newRFTarget + "  rfactual:" + autoSwerve.SwervePod1motor.getCurrentPosition() +
-                    "  rrtarget: " + newRFTarget + "  rractual:" + autoSwerve.SwervePod2motor.getCurrentPosition() +
+                    "  lftarget: " + newLFTarget + "  lfactual:" + autoLibrary.leftFrontDrive.getCurrentPosition() +
+                    "  lrtarget: " + newLFTarget + "  lractual:" + autoLibrary.leftRearDrive.getCurrentPosition() +
+                    "  rftarget: " + newRFTarget + "  rfactual:" + autoLibrary.rightFrontDrive.getCurrentPosition() +
+                    "  rrtarget: " + newRFTarget + "  rractual:" + autoLibrary.rightRearDrive.getCurrentPosition() +
                     "  heading:" + readGyro());
 
             RobotLog.i("DM10337 - Gyro error average: " + gyroErrorAvg.average());
 
             // Stop all motion;
-            autoSwerve.SwervePod3motor.setPower(0);
-            autoSwerve.SwervePod4motor.setPower(0);
-            autoSwerve.SwervePod1motor.setPower(0);
-            autoSwerve.SwervePod2motor.setPower(0);
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            autoSwerve.SwervePod3motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            autoSwerve.SwervePod4motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            autoSwerve.SwervePod1motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            autoSwerve.SwervePod2motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         }
     }
@@ -480,10 +463,10 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
         }
 
         // Send desired speeds to motors.
-        autoSwerve.SwervePod3motor.setPower(leftSpeed);
-        autoSwerve.SwervePod1motor.setPower(rightSpeed);
-        autoSwerve.SwervePod4motor.setPower(leftSpeed);
-        autoSwerve.SwervePod2motor.setPower(rightSpeed);
+        autoLibrary.leftFrontDrive.setPower(leftSpeed);
+        autoLibrary.rightFrontDrive.setPower(rightSpeed);
+        autoLibrary.leftRearDrive.setPower(leftSpeed);
+        autoLibrary.rightRearDrive.setPower(rightSpeed);
 
         return onTarget;
     }
@@ -620,5 +603,120 @@ public class Auto_test_with_library_Swerve extends LinearOpMode {
         double headingBias = autoLibrary.angles.firstAngle;
         autoLibrary.angles = autoLibrary.imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         return autoLibrary.angles.firstAngle - headingBias;
+    }
+    public void encoderStrafeLeft ( double speed,
+                                    double leftInches, double rightInches,
+                                    double timeoutS){
+        int newLeftTarget;//init the variable newLeftTarget
+        int newRightTarget;//init the variable newRightTarget
+
+        // Ensure that the OpMode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = autoLibrary.leftFrontDrive.getCurrentPosition() + (int) (leftInches * autoLibrary.COUNTS_PER_INCH);
+            newRightTarget = autoLibrary.rightFrontDrive.getCurrentPosition() + (int) (rightInches * autoLibrary.COUNTS_PER_INCH);
+            autoLibrary.leftFrontDrive.setTargetPosition(newLeftTarget);
+            autoLibrary.leftRearDrive.setTargetPosition(-newLeftTarget);
+            autoLibrary.rightFrontDrive.setTargetPosition(-newRightTarget);
+            autoLibrary.rightRearDrive.setTargetPosition(newRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            autoLibrary.runtime.reset();
+            autoLibrary.leftFrontDrive.setPower(speed);
+            autoLibrary.leftRearDrive.setPower(speed);
+            autoLibrary.rightFrontDrive.setPower(speed);
+            autoLibrary.rightRearDrive.setPower(speed);
+
+            //While the motors and OpMode is running, return telemetry on the motors
+            while (opModeIsActive() &&
+                    (autoLibrary.runtime.seconds() < timeoutS) &&
+                    (autoLibrary.leftFrontDrive.isBusy() && autoLibrary.rightFrontDrive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        autoLibrary.leftFrontDrive.getCurrentPosition(),
+                        autoLibrary.rightFrontDrive.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        }
+    }
+    public void encoderStrafeRight( double speed,
+                                    double leftInches, double rightInches,
+                                    double timeoutS){
+        int newLeftTarget;//init the variable newLeftTarget
+        int newRightTarget;//init the variable newRightTarget
+
+        // Ensure that the OpMode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = autoLibrary.leftFrontDrive.getCurrentPosition() + (int) (leftInches * autoLibrary.COUNTS_PER_INCH);
+            newRightTarget = autoLibrary.rightFrontDrive.getCurrentPosition() + (int) (rightInches * autoLibrary.COUNTS_PER_INCH);
+            autoLibrary.leftFrontDrive.setTargetPosition(-newLeftTarget);
+            autoLibrary.leftRearDrive.setTargetPosition(newLeftTarget);
+            autoLibrary.rightFrontDrive.setTargetPosition(newRightTarget);
+            autoLibrary.rightRearDrive.setTargetPosition(-newRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            autoLibrary.runtime.reset();
+            autoLibrary.leftFrontDrive.setPower(speed);
+            autoLibrary.leftRearDrive.setPower(speed);
+            autoLibrary.rightFrontDrive.setPower(speed);
+            autoLibrary.rightRearDrive.setPower(speed);
+
+
+            //While the motors and OpMode is running, return telemetry on the motors
+            while (opModeIsActive() &&
+                    (autoLibrary.runtime.seconds() < timeoutS) &&
+                    (autoLibrary.leftFrontDrive.isBusy() && autoLibrary.rightFrontDrive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        autoLibrary.leftFrontDrive.getCurrentPosition(),
+                        autoLibrary.rightFrontDrive.getCurrentPosition());
+                telemetry.update();
+            }
+
+
+            // Stop all motion;
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
     }
 }
