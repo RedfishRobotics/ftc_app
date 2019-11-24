@@ -75,7 +75,7 @@ public class Webcam_Pivot_Test extends LinearOpMode {
         panServo = hardwareMap.get(Servo.class, "Pan_Servo");
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-        panServo.setPosition(0.49);
+        panServo.setPosition(0.65);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();

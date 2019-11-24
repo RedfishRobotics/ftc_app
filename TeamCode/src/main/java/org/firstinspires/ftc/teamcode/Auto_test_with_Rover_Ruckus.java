@@ -34,7 +34,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
-@Autonomous(name="Auto library Test Swerve", group="Linear Opmode")
+@Autonomous(name="Rover Ruckus Depot Auto", group="Rover Ruckus")
 
 public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
     Auto_Library_Rover_Ruckus autoLibrary = new Auto_Library_Rover_Ruckus();
@@ -155,34 +155,31 @@ public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
         telemetry.update();
         waitForStart();
         while (opModeIsActive()) {
+//            sleep(15000);
             webcamScan();
-            encoderDrive(0.4, 4,2, false, 2, true, false, 0);
+            encoderDrive(0.6, 4,4, 2);
             sleep(500);
             if(goldMineralPosition == 1){
                 sleep(250);
-                gyroTurn(0.4, 45, 0.011);
+                gyroTurn(0.6, 35, 0.011);
                 sleep(250);
-                encoderDrive(0.4, 22,4, false, 2, true, false, 0);
-                sleep(250);
-                encoderDrive(0.4, 6, 4, false, 2, true, false, 0);
-                //sleep(250);
-                //autoSwerve.leftKnock();
+                encoderDrive(0.6, 28, 28, 7);
             } else if(goldMineralPosition == 2){
+                gyroTurn(0.6, 0, 0.011);
                 sleep(250);
-                encoderDrive(0.4, 20,4, false, 2, true, false, 0);
-                sleep(250);
-                encoderDrive(0.4, 4, 2, false, 2, true, false, 0);
+                encoderDrive(0.6, 28, 28, 7);
             } else if(goldMineralPosition == 3){
                 sleep(250);
-                gyroTurn(0.4, -45, 0.011);
+                gyroTurn(0.6, 35, 0.011);
                 sleep(250);
-                encoderDrive(0.4, 20,4, false, 2, true, false, 0);
+                encoderDrive(0.6, 28,28, 7);
                 sleep(250);
-                encoderDrive(0.4, 6, 4, false, 2, true, false, 0);
-                //sleep(250);
-                //autoSwerve.rightKnock();
+                gyroTurn(0.6, 65, 0.011);
+                sleep(250);
+                encoderDrive(0.6, 40,40,7);
+
             } else if(goldMineralPosition == 0){
-                encoderDrive(0.4, 20,4, false, 2, true, false, 0);
+                encoderDrive(0.6, 20,20, 7);
             }
 
             stop();
@@ -193,7 +190,7 @@ public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
 
     public  void webcamScan(){//The method for the webcam sampling for the gold mineral
         while(opModeIsActive()){
-            autoLibrary.panServo.setPosition(0.75);//turn the pan servo to the left position
+            autoLibrary.panServo.setPosition(0.65);//turn the pan servo to the left position
             sleep(1000);
             if(detector.getAligned()){//scans from the gold mineral
                 telemetry.addLine("left");//if seen, the telemetry value returns the line left
@@ -203,7 +200,7 @@ public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
                 break;//breaks from while loop
             }
             else{
-                autoLibrary.panServo.setPosition(0.5);//if not seen the pan servo turns to the center position
+                autoLibrary.panServo.setPosition(0.49);//if not seen the pan servo turns to the center position
             }
             sleep(1000);
             if(detector.getAligned()){//scans from the gold mineral
@@ -214,7 +211,7 @@ public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
                 break;//breaks from while loop
             }
             else{
-                autoLibrary.panServo.setPosition(0.29);//if not seen the pan servo turns to the center position
+                autoLibrary.panServo.setPosition(0.35);//if not seen the pan servo turns to the center position
             }
             sleep(1000);
             if(detector.getAligned()){
@@ -232,165 +229,48 @@ public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
             }
         }
     }
-    public void encoderDrive(double speed,
-                             double distance,
-                             double timeout,
-                             boolean useGyro,
-                             double heading,
-                             boolean aggressive,
-                             boolean userange,
-                             double maintainRange) throws InterruptedException {
+    public void encoderDrive( double speed,
+                              double leftInches, double rightInches,
+                              double timeoutS){
+        int newLeftTarget;//init the variable newLeftTarget
+        int newRightTarget;//init the variable newRightTarget
 
-        // Calculated encoder targets
-        int newLFTarget;
-        int newRFTarget;
-        int newLRTarget;
-        int newRRTarget;
-
-        // The potentially adjusted current target heading
-        double curHeading = heading;
-
-        // Speed ramp on start of move to avoid wheel slip
-        final double MINSPEED = 0.30;           // Start at this power
-        final double SPEEDINCR = 0.015;         // And increment by this much each cycle
-        double curSpeed;                        // Keep track of speed as we ramp
-
-        // Ensure that the opmode is still active
+        // Ensure that the OpMode is still active
         if (opModeIsActive()) {
 
-            RobotLog.i("DM10337- Starting encoderDrive speed:" + speed +
-                    "  distance:" + distance + "  timeout:" + timeout +
-                    "  useGyro:" + useGyro + " heading:" + heading + "  maintainRange: " + maintainRange);
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = autoLibrary.leftFrontDrive.getCurrentPosition() + (int) (leftInches * autoLibrary.COUNTS_PER_INCH);
+            newRightTarget = autoLibrary.rightFrontDrive.getCurrentPosition() + (int) (rightInches * autoLibrary.COUNTS_PER_INCH);
+            autoLibrary.leftFrontDrive.setTargetPosition(newLeftTarget);
+//            autoLibrary.leftRearDrive.setTargetPosition(newLeftTarget);
+            autoLibrary.rightFrontDrive.setTargetPosition(newRightTarget);
+//            autoLibrary.rightRearDrive.setTargetPosition(newRightTarget);
 
-            // Calculate "adjusted" distance  for each side to account for requested turn during run
-            // Purpose of code is to have PIDs closer to finishing even on curved moves
-            // This prevents jerk to one side at stop
-            double leftDistance = distance;
-            double rightDistance = distance;
-            if (useGyro) {
-                // We are gyro steering -- are we requesting a turn while driving?
-                double headingChange = getError(curHeading) * Math.signum(distance);
-                if (Math.abs(headingChange) > 5.0) {
-                    //Heading change is significant enough to account for
-                    if (headingChange > 0.0) {
-                        // Assume 15.25 inch wheelbase
-                        // Add extra distance to the wheel on outside of turn
-                        rightDistance += Math.signum(distance) * 2 * 3.1415 * 12 * headingChange / 360.0;
-                        RobotLog.i("DM10337 -- Turn adjusted R distance:" + rightDistance);
-                    } else {
-                        // Assume 15.25 inch wheelbase
-                        // Add extra distance from the wheel on inside of turn
-                        // headingChange is - so this is increasing the left distance
-                        leftDistance -= Math.signum(distance) * 2 * 3.1415 * 12 * headingChange / 360.0;
-                        RobotLog.i("DM10337 -- Turn adjusted L distance:" + leftDistance);
-                    }
-                }
-            }
-
-            // Determine new target encoder positions, and pass to motor controller
-            newLFTarget = autoLibrary.leftFrontDrive.getCurrentPosition() + (int) (leftDistance * autoLibrary.COUNTS_PER_INCH);
-            newLRTarget = autoLibrary.leftRearDrive.getCurrentPosition() + (int) (leftDistance * autoLibrary.COUNTS_PER_INCH);
-            newRFTarget = autoLibrary.rightFrontDrive.getCurrentPosition() + (int) (rightDistance * autoLibrary.COUNTS_PER_INCH);
-            newRRTarget = autoLibrary.rightRearDrive.getCurrentPosition() + (int) (rightDistance * autoLibrary.COUNTS_PER_INCH);
-
-            while (autoLibrary.leftFrontDrive.getTargetPosition() != newLFTarget) {
-                autoLibrary.leftFrontDrive.setTargetPosition(newLFTarget);
-                sleep(1);
-            }
-            while (autoLibrary.rightFrontDrive.getTargetPosition() != newRFTarget) {
-                autoLibrary.rightFrontDrive.setTargetPosition(newRFTarget);
-                sleep(1);
-            }
-            while (autoLibrary.leftRearDrive.getTargetPosition() != newLRTarget) {
-                autoLibrary.leftRearDrive.setTargetPosition(newLRTarget);
-                sleep(1);
-            }
-            while (autoLibrary.rightRearDrive.getTargetPosition() != newRRTarget) {
-                autoLibrary.rightRearDrive.setTargetPosition(newRRTarget);
-                sleep(1);
-            }
-
-            // Turn On motors to RUN_TO_POSITION
+            // Turn On RUN_TO_POSITION
             autoLibrary.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            autoLibrary.leftRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             autoLibrary.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            autoLibrary.rightRearDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             autoLibrary.runtime.reset();
-
-            speed = Math.abs(speed);    // Make sure its positive
-            curSpeed = Math.min(MINSPEED, speed);
-
-            // Set the motors to the starting power
-            autoLibrary.leftFrontDrive.setPower(Math.abs(curSpeed));
-            autoLibrary.rightFrontDrive.setPower(Math.abs(curSpeed));
-            autoLibrary.leftRearDrive.setPower(Math.abs(curSpeed));
-            autoLibrary.rightRearDrive.setPower(Math.abs(curSpeed));
-
-            // keep looping while we are still active, and there is time left, until at least 1 motor reaches target
+            autoLibrary.leftFrontDrive.setPower(speed);
+            autoLibrary.leftRearDrive.setPower(speed);
+            autoLibrary.rightFrontDrive.setPower(speed);
+            autoLibrary.rightRearDrive.setPower(speed);
+///
+            //While the motors and OpMode is running, return telemetry on the motors
             while (opModeIsActive() &&
-                    (autoLibrary.runtime.seconds() < timeout) &&
-                    autoLibrary.leftFrontDrive.isBusy() &&
-                    autoLibrary.leftRearDrive.isBusy() &&
-                    autoLibrary.rightFrontDrive.isBusy() &&
-                    autoLibrary.rightRearDrive.isBusy()) {
+                    (autoLibrary.runtime.seconds() < timeoutS) &&
+                    (autoLibrary.leftFrontDrive.isBusy() && autoLibrary.rightFrontDrive.isBusy())) {
 
-                // Ramp up motor powers as needed
-                if (curSpeed < speed) {
-                    curSpeed += SPEEDINCR;
-                }
-                double leftSpeed = curSpeed;
-                double rightSpeed = curSpeed;
-
-                // Doing gyro heading correction?
-                if (useGyro) {
-
-                    // adjust relative speed based on heading
-                    double error = getError(curHeading);
-
-                    updateGyroErrorAvg(error);
-
-                    double steer = getSteer(error,
-                            (aggressive ? P_DRIVE_COEFF_2 : P_DRIVE_COEFF_1));
-
-                    // if driving in reverse, the motor correction also needs to be reversed
-                    if (distance < 0)
-                        steer *= -1.0;
-
-                    // Adjust motor powers for heading correction
-                    leftSpeed -= steer;
-                    rightSpeed += steer;
-
-                    // Normalize speeds if any one exceeds +/- 1.0;
-                    double max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-                    if (max > 1.0) {
-                        leftSpeed /= max;
-                        rightSpeed /= max;
-                    }
-
-                }
-
-                // And rewrite the motor speeds
-                autoLibrary.leftFrontDrive.setPower(Math.abs(leftSpeed));
-                autoLibrary.rightFrontDrive.setPower(Math.abs(rightSpeed));
-                autoLibrary.leftRearDrive.setPower(Math.abs(leftSpeed));
-                autoLibrary.rightRearDrive.setPower(Math.abs(rightSpeed));
-
-                // Allow time for other processes to run.
-                sleep(1);
-                ;
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        autoLibrary.leftFrontDrive.getCurrentPosition(),
+                        autoLibrary.rightFrontDrive.getCurrentPosition());
+                telemetry.update();
             }
-
-
-            RobotLog.i("DM10337- encoderDrive done" +
-                    "  lftarget: " + newLFTarget + "  lfactual:" + autoLibrary.leftFrontDrive.getCurrentPosition() +
-                    "  lrtarget: " + newLFTarget + "  lractual:" + autoLibrary.leftRearDrive.getCurrentPosition() +
-                    "  rftarget: " + newRFTarget + "  rfactual:" + autoLibrary.rightFrontDrive.getCurrentPosition() +
-                    "  rrtarget: " + newRFTarget + "  rractual:" + autoLibrary.rightRearDrive.getCurrentPosition() +
-                    "  heading:" + readGyro());
-
-            RobotLog.i("DM10337 - Gyro error average: " + gyroErrorAvg.average());
 
             // Stop all motion;
             autoLibrary.leftFrontDrive.setPower(0);
@@ -406,11 +286,6 @@ public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
 
         }
     }
-
-    public void updateGyroErrorAvg(double error) {
-        gyroErrorAvg.add(Math.abs(error));
-    }
-
     public void gyroTurn(double speed, double angle, double coefficient) {
 
         telemetry.addLine("DM10337- gyroTurn start  speed:" + speed +

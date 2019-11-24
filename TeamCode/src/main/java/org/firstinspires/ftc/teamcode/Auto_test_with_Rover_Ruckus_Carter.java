@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -34,9 +33,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
-@Autonomous(name="Rover Ruckus Depot Auto", group="Rover Ruckus")
+@Autonomous(name="Rover Ruckus Depot Auto 2", group="Rover Ruckus")
 
-public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
+public class Auto_test_with_Rover_Ruckus_Carter extends LinearOpMode {
     Auto_Library_Rover_Ruckus autoLibrary = new Auto_Library_Rover_Ruckus();
 //    Auto_Library_Swerve autoSwerve = new Auto_Library_Swerve();
 
@@ -171,10 +170,6 @@ public class Auto_test_with_Rover_Ruckus extends LinearOpMode {
                 gyroTurn(0.6, -35, 0.011);
                 sleep(250);
                 encoderDrive(0.6, -28,-28, 7);
-                sleep(250);
-                gyroTurn(0.6, 65, 0.011);
-                sleep(250);
-                encoderDrive(0.6, 40,40,7);
 
             } else if(goldMineralPosition == 0){
                 encoderDrive(0.6, -20,-20, 7);

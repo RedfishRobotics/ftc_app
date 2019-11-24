@@ -1,50 +1,306 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.Dogeforia;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-@Autonomous(name="Rover Ruckus Hanger Park", group="Rover Ruckus")
-public class Auto_hanger_carter_park extends LinearOpMode {
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
+
+@Autonomous(name="Rover Ruckus Hanger Scan" , group="Rover Ruckus")
+public class Auto_hanger_carter_scan extends LinearOpMode {
+    public DigitalChannel magneticSwitchStaging = null;
+
     Auto_Library_Rover_Ruckus autoLibrary = new Auto_Library_Rover_Ruckus();
     TeleOp_Library_Rover_Ruckus TeleOp = new TeleOp_Library_Rover_Ruckus();
 
     private ElapsedTime runtime = new ElapsedTime();
 
+    public MovingAvg gyroErrorAvg = new MovingAvg(30);
+    static final double P_DRIVE_COEFF_1 = 0.01;  // Larger is more responsive, but also less accurate
+    static final double P_DRIVE_COEFF_2 = 0.25;  // Intenionally large so robot "wiggles" around the target setpoint while driving
+    int goldMineralPosition = 0;
+    private static final float mmPerInch = 25.4f;
+    private static final float mmFTCFieldWidth = (12 * 6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
+    private static final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
+
+    // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
+    // Valid choices are:  BACK or FRONT
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+
+    // Vuforia variables
+    private OpenGLMatrix lastLocation = null;
+    boolean targetVisible;
+    Dogeforia vuforia;
+    WebcamName webcamName;
+    List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+
+    // DogeCV detector
+    GoldAlignDetector detector;
+
     @Override
     public void runOpMode() throws InterruptedException {
+//        autoSwerve.init(hardwareMap);
         autoLibrary.init(hardwareMap);
-        TeleOp.init(hardwareMap);
+
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        // Vuforia licence key
+        parameters.vuforiaLicenseKey = "AeyEUJr/////AAABmeFmvlzTdkEAiH3nHjERdd+Llh9YjOwGt7MJzlc6lwgtipxMyv3XcDmgJ9xt4hP+jxTG0U9/ryXj5p9dCnKDxdKUk0eXb7+916/0BpGO5Oo3sIu/wj56lSatbA6e/vHUHtawRO3XodseNo8YN3yQLPlEYDh6NuRP+m3559sMhYaJJnFdnieUEtgHV/Bjiv1P3wNy5dGDX541b+fBOiXX1xIq+Bt/bZ/c8dRZweH/56c8pwxszEZ3dLBr9e6IMqZ1q31B4dE1az8QzF3vHzmDHLwVu1Nw5noOeN3g7QEbgseLuUISxl8EvSHzcwumkAszmMaO+W0d10dMbgeuQnZgjInLfI/qhkVn22jewMn3whu3";
+
+        parameters.fillCameraMonitorViewParent = true;
+
+        // Set camera name for Vuforia config
+        parameters.cameraName = webcamName;
+
+        // Create Dogeforia object
+        vuforia = new Dogeforia(parameters);
+        vuforia.enableConvertFrameToBitmap();
+
+        //Setup trackables
+        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
+        blueRover.setName("Blue-Rover");
+        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
+        redFootprint.setName("Red-Footprint");
+        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
+        frontCraters.setName("Front-Craters");
+        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
+        backSpace.setName("Back-Space");
+
+        // For convenience, gather together all the trackable objects in one easily-iterable collection */
+        allTrackables.addAll(targetsRoverRuckus);
+
+        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
+                .translation(0, mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
+        blueRover.setLocation(blueRoverLocationOnField);
+
+        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
+                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
+        redFootprint.setLocation(redFootprintLocationOnField);
+
+        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
+                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90));
+        frontCraters.setLocation(frontCratersLocationOnField);
+
+        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
+                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
+        backSpace.setLocation(backSpaceLocationOnField);
+
+
+        final int CAMERA_FORWARD_DISPLACEMENT = 215;   // eg: Camera is 110 mm in front of robot center
+        final int CAMERA_VERTICAL_DISPLACEMENT = 324;   // eg: Camera is 200 mm above ground
+        final int CAMERA_LEFT_DISPLACEMENT = 165;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
+                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
+
+        for (VuforiaTrackable trackable : allTrackables) {
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        }
+
+        // Activate the targets
+        targetsRoverRuckus.activate();
+
+        // Initialize the detector
+        detector = new GoldAlignDetector();
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, true);
+        detector.useDefaults();
+        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
+        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
+        detector.downscale = 0.8;
+
+        // Set the detector
+        vuforia.setDogeCVDetector(detector);
+        vuforia.enableDogeCV();
+        vuforia.showDebug();
+        vuforia.start();
+        autoLibrary.init(hardwareMap);
+//        TeleOp.init(hardwareMap);
         composeTelemetry();
         telemetry.update();
         waitForStart();
         while (opModeIsActive()) {
-            TeleOp.hangerUp();
+//            autoLibrary.hangerUp();
+//            sleep(17000);
+            webcamScan();
+            sleep(250);
+//            encoderStrafeRight(0.6, 4, 4, 5);
+            //gyroTurn(0.6, -35, 0.011);
+            sleep(500);
+            autoLibrary.leftFrontDrive.setPower(0.5);
+            autoLibrary.leftRearDrive.setPower(0.5);
+            autoLibrary.rightFrontDrive.setPower(0.5);
+            autoLibrary.rightRearDrive.setPower(0.5);
+            sleep(500);
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
+//            encoderStrafeLeft(0.6,4,4,5);
+            //encoderDrive(0.6, 8, 8, 7);
+            while (magneticSwitchStaging.getState() == true) {
+                autoLibrary.boxArm.setPower(0.5);
+                autoLibrary.boxServo.setPower(0.15);
+            }
+            autoLibrary.boxServo.setPower(0.0);
+            autoLibrary.boxArm.setPower(0.0);
+        }
+        sleep(250);
+//            gyroTurn(0.6, 0, 0.25);
+        sleep(250);
+        if (goldMineralPosition == 1) {
+            sleep(250);
+            gyroTurn(0.6, 30, 0.25);
+            sleep(250);
+            autoLibrary.leftFrontDrive.setPower(0.65);
+            autoLibrary.leftRearDrive.setPower(0.65);
+            autoLibrary.rightFrontDrive.setPower(0.65);
+            autoLibrary.rightRearDrive.setPower(0.65);
+            sleep(2000);
+            autoLibrary.leftFrontDrive.setPower(-0.65);
+            autoLibrary.leftRearDrive.setPower(-0.65);
+            autoLibrary.rightFrontDrive.setPower(-0.65);
+            autoLibrary.rightRearDrive.setPower(-0.65);
+            sleep(2000);
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
+        } else if (goldMineralPosition == 2) {
+            sleep(250);
+            autoLibrary.leftFrontDrive.setPower(0.65);
+            autoLibrary.leftRearDrive.setPower(0.65);
+            autoLibrary.rightFrontDrive.setPower(0.65);
+            autoLibrary.rightRearDrive.setPower(0.65);
+            sleep(2000);
+            autoLibrary.leftFrontDrive.setPower(-0.65);
+            autoLibrary.leftRearDrive.setPower(-0.65);
+            autoLibrary.rightFrontDrive.setPower(-0.65);
+            autoLibrary.rightRearDrive.setPower(-0.65);
+            sleep(2000);
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
+        } else if (goldMineralPosition == 3) {
+            sleep(250);
+            gyroTurn(0.6, -30, 0.25);
+            sleep(250);
+            autoLibrary.leftFrontDrive.setPower(0.65);
+            autoLibrary.leftRearDrive.setPower(0.65);
+            autoLibrary.rightFrontDrive.setPower(0.65);
+            autoLibrary.rightRearDrive.setPower(0.65);
+            sleep(2000);
+            autoLibrary.leftFrontDrive.setPower(-0.65);
+            autoLibrary.leftRearDrive.setPower(-0.65);
+            autoLibrary.rightFrontDrive.setPower(-0.65);
+            autoLibrary.rightRearDrive.setPower(-0.65);
+            sleep(2000);
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
+        } else if (goldMineralPosition == 0) {
+            autoLibrary.leftFrontDrive.setPower(0.65);
+            autoLibrary.leftRearDrive.setPower(0.65);
+            autoLibrary.rightFrontDrive.setPower(0.65);
+            autoLibrary.rightRearDrive.setPower(0.65);
+            sleep(2000);
+            autoLibrary.leftFrontDrive.setPower(-0.65);
+            autoLibrary.leftRearDrive.setPower(-0.65);
+            autoLibrary.rightFrontDrive.setPower(-0.65);
+            autoLibrary.rightRearDrive.setPower(-0.65);
+            sleep(2000);
+            autoLibrary.leftFrontDrive.setPower(0);
+            autoLibrary.leftRearDrive.setPower(0);
+            autoLibrary.rightFrontDrive.setPower(0);
+            autoLibrary.rightRearDrive.setPower(0);
+
+        }
+
+        stop();
+        telemetry.update();
+        stop();
+    }
+
+    public  void webcamScan(){//The method for the webcam sampling for the gold mineral
+        while(opModeIsActive()){
+            autoLibrary.panServo.setPosition(0.6);//turn the pan servo to the left position
             sleep(1000);
-            gyroTurn(0.6, -35, 0.011);
-            sleep(500);
-            encoderDrive(0.6, 8,8, 5);
-            sleep(500);
-            gyroTurn(0.6, 0, 0.011);
-            sleep(500);
-            encoderDrive(0.6, 20, 20, 5);
-            sleep(500);
-            TeleOp.right_Intake.setPower(-0.6);
-            TeleOp.left_Intake.setPower(-0.6);
+            if(detector.getAligned()){//scans from the gold mineral
+                telemetry.addLine("left");//if seen, the telemetry value returns the line left
+                telemetry.update();
+                goldMineralPosition = 1;//if seen, returns the left value of 1
+                sleep(500);
+                break;//breaks from while loop
+            }
+            else{
+                autoLibrary.panServo.setPosition(0.49);//if not seen the pan servo turns to the center position
+            }
             sleep(1000);
-            TeleOp.left_Intake.setPower(0.0);
-            TeleOp.right_Intake.setPower(0.0);
-            stop();
+            if(detector.getAligned()){//scans from the gold mineral
+                telemetry.addLine("center");//if seen, the telemetry value returns the line center
+                telemetry.update();
+                goldMineralPosition = 2;//if seen, returns the center value of 2
+                sleep(500);
+                break;//breaks from while loop
+            }
+            else{
+                autoLibrary.panServo.setPosition(0.4);//if not seen the pan servo turns to the center position
+            }
+            sleep(1000);
+            if(detector.getAligned()){
+                telemetry.addLine("right");//if seen, the telemetry value returns the line right
+                telemetry.update();
+                goldMineralPosition = 3;//if seen, returns the right value of 3
+                sleep(500);
+                break;//breaks from while loop
+            }
+            else{
+                telemetry.addLine("Defalt");//if none of the positions return as true, the telemetry value returns the line default
+                telemetry.update();
+                goldMineralPosition = 0;//if none of the positions return as true, returns the default value of 0
+                break;//breaks from while loop
+            }
         }
     }
     public void encoderDrive( double speed,

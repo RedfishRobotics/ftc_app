@@ -5,105 +5,112 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 
-@TeleOp(name="NewRobotTest", group="Pushbot")
+@TeleOp(name="Champs_TeleOp", group="Pushbot")
 public class SlideLiftTest extends LinearOpMode {
 
     TeleOp_Library_Rover_Ruckus TeleOp = new TeleOp_Library_Rover_Ruckus();
 
+//    double[] intakeLatch = new double[]{0, 1};
+//    private int currentLatchIndex;
+//    private boolean aPressedLast;
+
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
 
         TeleOp.init(hardwareMap);
+//        this.currentLatchIndex = 0;
+//        this.aPressedLast = false;
         waitForStart();
 
         while (opModeIsActive()){
-            if(gamepad1.a){
+//            final boolean yPressed = this.gamepad1.a;
+//            if (yPressed && !this.aPressedLast)
+//                this.currentLatchIndex = (this.currentLatchIndex + 1) % intakeLatch.length;
+//            this.aPressedLast = yPressed;
+            if(gamepad2.right_bumper){
+                TeleOp.intakeLidOpen();
+            }else{
+                TeleOp.intakeLidClosed();
+            }
+            if(gamepad2.a){
                 TeleOp.intakeIn();
             }
-            if(gamepad1.b){
+            if(gamepad2.b){
                 TeleOp.intakeStop();
             }
-            if(gamepad1.x){
+            if(gamepad2.x){
                 TeleOp.intakeOut();
             }
-            if(gamepad1.dpad_down){
-                TeleOp.lifterTucked();
+            if(gamepad2.dpad_up && TeleOp.magneticSwitchScoring.getState() == true && TeleOp.magneticSwitchStaging.getState() == true){
+                TeleOp.scoringStandBy();
             }
-            if(gamepad1.dpad_right){
-                TeleOp.lifterScoring();
+            if(gamepad2.dpad_down){
+                TeleOp.scoringDown();
+            }
+            if(gamepad1.right_bumper){
+                TeleOp.scoringScore();
+            }
+            if(gamepad1.dpad_down){
+                TeleOp.hangerDown();
             }
             if(gamepad1.dpad_up){
-                TeleOp.lifterDown();
+                TeleOp.hangerUp();
             }
+            if(-gamepad2.right_stick_y > 0.2){
+                TeleOp.right_Intake.setPower(0.8);
+                TeleOp.left_Intake.setPower(0.8);
+            }else{
+                TeleOp.right_Intake.setPower(-gamepad2.right_stick_y);
+                TeleOp.left_Intake.setPower(-gamepad2.right_stick_y);
+            }
+            if(-gamepad2.right_stick_y < -0.2){
+                TeleOp.right_Intake.setPower(-0.8);
+                TeleOp.left_Intake.setPower(-0.8);
+            }else{
+                TeleOp.right_Intake.setPower(-gamepad2.right_stick_y);
+                TeleOp.left_Intake.setPower(-gamepad2.right_stick_y);
+            }
+//            TeleOp.boxArm.setPower(-gamepad2.left_stick_y);
+            if(-gamepad2.left_stick_y < -0.2){
+                TeleOp.boxArm.setPower(-0.5);
+            }else{
+                TeleOp.boxArm.setPower(-gamepad2.left_stick_y);
+            }
+            if(-gamepad2.left_stick_y > 0.2){
+                TeleOp.boxArm.setPower(0.5);
+            }else{
+                TeleOp.boxArm.setPower(-gamepad2.left_stick_y);
+            }
+            if(gamepad2.right_trigger > 0.2){
+                TeleOp.boxServo.setPower(-0.5);
+            }
+            else if(gamepad2.left_trigger > 0.2){
+                TeleOp.boxServo.setPower(0.5);
+            }else{
+                TeleOp.boxServo.setPower(gamepad2.left_trigger);
+            }
+//            TeleOp.right_Intake.setPower(-gamepad2.right_stick_y);
+//            TeleOp.left_Intake.setPower(-gamepad2.right_stick_y);
             if (gamepad1.left_trigger > 0.2) {
-                TeleOp.leftFrontDrive.setPower(gamepad1.left_trigger);
-                TeleOp.leftRearDrive.setPower(-gamepad1.left_trigger);
-                TeleOp.rightFrontDrive.setPower(-gamepad1.left_trigger);
-                TeleOp.rightRearDrive.setPower(gamepad1.left_trigger);
+                TeleOp.leftFrontDrive.setPower(0.8);
+                TeleOp.leftRearDrive.setPower(-0.8);
+                TeleOp.rightFrontDrive.setPower(0.8);
+                TeleOp.rightRearDrive.setPower(-0.8);
             } if (gamepad1.right_trigger > 0.2) {
-                TeleOp.leftFrontDrive.setPower(-gamepad1.right_trigger);
-                TeleOp.leftRearDrive.setPower(gamepad1.right_trigger);
-                TeleOp.rightFrontDrive.setPower(gamepad1.right_trigger);
-                TeleOp.rightRearDrive.setPower(-gamepad1.right_trigger);
+                TeleOp.leftFrontDrive.setPower(-0.8);
+                TeleOp.leftRearDrive.setPower(0.8);
+                TeleOp.rightFrontDrive.setPower(-0.8);
+                TeleOp.rightRearDrive.setPower(0.8);
             } else {
-                TeleOp.leftFrontDrive.setPower(-gamepad1.left_stick_y);
-                TeleOp.leftRearDrive.setPower(-gamepad1.left_stick_y);
-                TeleOp.rightFrontDrive.setPower(-gamepad1.right_stick_y);
-                TeleOp.rightRearDrive.setPower(-gamepad1.right_stick_y);
+                TeleOp.leftFrontDrive.setPower(gamepad1.left_stick_y);
+                TeleOp.leftRearDrive.setPower(gamepad1.left_stick_y);
+                TeleOp.rightFrontDrive.setPower(gamepad1.right_stick_y);
+                TeleOp.rightRearDrive.setPower(gamepad1.right_stick_y);
             }
-            RobotLog.i("right lift position "+ TeleOp.rightLifter.getCurrentPosition());
-            RobotLog.i("left lift position " + TeleOp.leftLifter.getCurrentPosition());
-            telemetry.addLine("Left lift position: " + TeleOp.leftLifter.getCurrentPosition());
-            telemetry.addLine("Right lift position: "+ TeleOp.rightLifter.getCurrentPosition());
+            telemetry.addLine("Lift Arm: " + TeleOp.scoring_arm_lifter.getCurrentPosition());
+            telemetry.addLine("Hanger: " +TeleOp.hanger.getCurrentPosition());
             telemetry.update();
-
         }
     }
-//public void liftTestRight(int target){
-//    //Sets the new target position for the glyph lifter
-//    // RightLiftMotor.setTargetPosition(target);
-//    rightLifter.setTargetPosition(target);
-//    //Turns on RUN_TO_POSITION
-//    // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//    rightLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//    //If statement that ask if the motor is busy
-//    if( rightLifter.isBusy()){
-//        //If statement that checks if the motors current position is more then the target
-//        if( rightLifter.getCurrentPosition() > target){
-//            //If the current position is more than the target, set motor power to 40%
-//            // RightLiftMotor.setPower(0.45);
-//            rightLifter.setPower(0.4);
-//        }
-//        //If statement that checks if the motors current position is less then the target
-//        else if( rightLifter.getCurrentPosition() < target){
-//            //If the current position is more than the target, set motor power to 60%
-//            // RightLiftMotor.setPower(0.5);
-//            rightLifter.setPower(0.15);
-//
-//        }
-//    }
-//}
-//    public void liftTestLeft(int target){
-//        //Sets the new target position for the glyph lifter
-//        // RightLiftMotor.setTargetPosition(target);
-//        leftLifter.setTargetPosition(target);
-//        //Turns on RUN_TO_POSITION
-//        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        leftLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        //If statement that ask if the motor is busy
-//        if( leftLifter.isBusy()){
-//            //If statement that checks if the motors current position is more then the target
-//            if( leftLifter.getCurrentPosition() > target){
-//                //If the current position is more than the target, set motor power to 40%
-//                // RightLiftMotor.setPower(0.45);
-//                leftLifter.setPower(0.4);
-//            }
-//            //If statement that checks if the motors current position is less then the target
-//            else if( leftLifter.getCurrentPosition() < target){
-//                //If the current position is more than the target, set motor power to 60%
-//                // RightLiftMotor.setPower(0.5);
-//                leftLifter.setPower(0.15);
-//            }
-//        }
-//    }
+
 }

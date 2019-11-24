@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -32,13 +33,20 @@ public class Auto_Library_Rover_Ruckus extends LinearOpMode {
     public DcMotor leftFrontDrive = null;
     public DcMotor leftRearDrive = null;
     public DcMotor rightFrontDrive = null;
-    public CRServo intake = null;
+    public DcMotor hanger = null;
+//    public CRServo intake = null;
+
+    public DigitalChannel magneticSwitchStaging = null;
+    public CRServo boxServo = null;
+    public CRServo boxArm = null;
     public Servo panServo = null;
     public DcMotor rightRearDrive = null;
-    public DcMotor intakeMotor = null;
-    public DcMotor intakeSlideMotor = null;
-    public DcMotor rightLifter = null;
+//    public DcMotor intakeMotor = null;
+//    public DcMotor intakeSlideMotor = null;
+//    public DcMotor rightLifter = null;
     public DcMotor leftLifter = null;
+    public CRServo leftSlide = null;
+    public CRServo rightSlide = null;
 
 
     public BNO055IMU imu;
@@ -47,7 +55,7 @@ public class Auto_Library_Rover_Ruckus extends LinearOpMode {
     public Orientation angles;
     public Acceleration gravity;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 537.6;    // The encoder ticks per revolution for andymark 40 motors
+    static final double     COUNTS_PER_MOTOR_REV    = 1120;    // The encoder ticks per revolution for andymark 40 motors
     static final double     DRIVE_GEAR_REDUCTION    = 1;     // The gear reduction on our motors
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // The diameter to get the circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -81,24 +89,45 @@ public class Auto_Library_Rover_Ruckus extends LinearOpMode {
         leftRearDrive = hardwareMap.get(DcMotor.class, "Left_RM");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "Right_FM");
         rightRearDrive = hardwareMap.get(DcMotor.class, "Right_RM");
-        rightLifter = hardwareMap.get(DcMotor.class, "Right_Lifter");
-        leftLifter = hardwareMap.get(DcMotor.class, "Left_Lifter");
-        intakeMotor = hardwareMap.get(DcMotor.class, "Intake_Motor");
-        intakeSlideMotor = hardwareMap.get(DcMotor.class, "Slide_Motor");
-        intake = hardwareMap.get(CRServo.class, "Intake_Servo");
+        magneticSwitchStaging = hardwareMap.get(DigitalChannel.class, "Stage_Hull_Effect");
+        boxArm = hardwareMap.get(CRServo.class, "Box_Arm");
+        boxServo = hardwareMap.get(CRServo.class, "Box_Servo");
+//        rightLifter = hardwareMap.get(DcMotor.class, "Right_Lifter");
+//        leftLifter = hardwareMap.get(DcMotor.class, "Left_Lifter");
+//        intakeMotor = hardwareMap.get(DcMotor.class, "Intake_Motor");
+        leftSlide = hardwareMap.get(CRServo.class, "Left_Slide");
+        rightSlide = hardwareMap.get(CRServo.class, "Right_Slide");
+//        intakeSlideMotor = hardwareMap.get(DcMotor.class, "Slide_Motor");
+        panServo = hardwareMap.get(Servo.class, "Pan_Servo");
+        hanger = hardwareMap.get(DcMotor.class, "Hanger");
+//        intake = hardwareMap.get(CRServo.class, "Intake_Servo");
 
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftRearDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightLifter.setDirection(DcMotor.Direction.FORWARD);
-        leftLifter.setDirection(DcMotor.Direction.REVERSE);
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
-        intakeSlideMotor.setDirection(DcMotor.Direction.FORWARD);
+        hanger.setDirection(DcMotor.Direction.REVERSE);
+//        rightLifter.setDirection(DcMotor.Direction.FORWARD);
+//        leftLifter.setDirection(DcMotor.Direction.REVERSE);
+//        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftSlide.setDirection(CRServo.Direction.FORWARD);
+        rightSlide.setDirection(CRServo.Direction.FORWARD);
+//        intakeSlideMotor.setDirection(DcMotor.Direction.FORWARD);
 
-        intakeSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftRearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightRearDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        leftRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        intakeSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rightLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        panServo.setPosition(0.6);
     }
 
     public void gyroTurn (  double speed, double angle, double coefficient) {
@@ -456,72 +485,105 @@ public class Auto_Library_Rover_Ruckus extends LinearOpMode {
 
         }
     }
-    public void intakeStop(){
-        intake.setPower(0.0);
+    public void hangerUp(){
+            Hanger(17700);
     }
-    public void intakeIn(){
-        intake.setPower(0.8);
+    public void hangerHalf(){
+        Hanger(8850);
     }
-    public void intakeOut(){
-        intake.setPower(-0.4);
+    public void hangerDown(){
+        Hanger(10);
     }
-    public void lifterTucked(){
-        liftTestLeft(0);
-        liftTestRight(0);
-    }
-    public void lifterScoring(){
-        liftTestLeft(775);
-        liftTestRight(550);
-    }
-    public void lifterDown(){
-        liftTestLeft(1750);
-        liftTestRight(1650);
-    }
-    public void liftTestRight(int target){
+    public void Hanger(int target) {
         //Sets the new target position for the glyph lifter
         // RightLiftMotor.setTargetPosition(target);
-        rightLifter.setTargetPosition(target);
+        hanger.setTargetPosition(target);
         //Turns on RUN_TO_POSITION
         // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hanger.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //If statement that ask if the motor is busy
-        if( rightLifter.isBusy()){
+        if (hanger.isBusy()) {
             //If statement that checks if the motors current position is more then the target
-            if( rightLifter.getCurrentPosition() > target){
+            if (hanger.getCurrentPosition() > target) {
                 //If the current position is more than the target, set motor power to 40%
                 // RightLiftMotor.setPower(0.45);
-                rightLifter.setPower(0.4);
+                hanger.setPower(0.65);
             }
             //If statement that checks if the motors current position is less then the target
-            else if( rightLifter.getCurrentPosition() < target){
+            else if (hanger.getCurrentPosition() < target) {
                 //If the current position is more than the target, set motor power to 60%
                 // RightLiftMotor.setPower(0.5);
-                rightLifter.setPower(0.15);
+                hanger.setPower(0.65);
 
             }
         }
     }
-    public void liftTestLeft(int target){
-        //Sets the new target position for the glyph lifter
-        // RightLiftMotor.setTargetPosition(target);
-        leftLifter.setTargetPosition(target);
-        //Turns on RUN_TO_POSITION
-        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //If statement that ask if the motor is busy
-        if( leftLifter.isBusy()){
-            //If statement that checks if the motors current position is more then the target
-            if( leftLifter.getCurrentPosition() > target){
-                //If the current position is more than the target, set motor power to 40%
-                // RightLiftMotor.setPower(0.45);
-                leftLifter.setPower(0.4);
-            }
-            //If statement that checks if the motors current position is less then the target
-            else if( leftLifter.getCurrentPosition() < target){
-                //If the current position is more than the target, set motor power to 60%
-                // RightLiftMotor.setPower(0.5);
-                leftLifter.setPower(0.15);
-            }
-        }
-    }
+//    public void intakeStop(){
+//        intakeMotor.setPower(0.0);
+//    }
+//    public void intakeIn(){
+//        intakeMotor.setPower(0.8);
+//    }
+//    public void intakeOut(){
+//        intakeMotor.setPower(-0.4);
+//    }
+//    public void lifterTucked(){
+//        liftTestLeft(0);
+//        liftTestRight(0);
+//    }
+//    public void lifterScoring(){
+//        liftTestLeft(775);
+//        liftTestRight(550);
+//    }
+//    public void lifterDown(){
+//        liftTestLeft(1750);
+//        liftTestRight(1650);
+//    }
+//    public void liftTestRight(int target){
+//        //Sets the new target position for the glyph lifter
+//        // RightLiftMotor.setTargetPosition(target);
+//        rightLifter.setTargetPosition(target);
+//        //Turns on RUN_TO_POSITION
+//        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        rightLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        //If statement that ask if the motor is busy
+//        if( rightLifter.isBusy()){
+//            //If statement that checks if the motors current position is more then the target
+//            if( rightLifter.getCurrentPosition() > target){
+//                //If the current position is more than the target, set motor power to 40%
+//                // RightLiftMotor.setPower(0.45);
+//                rightLifter.setPower(0.4);
+//            }
+//            //If statement that checks if the motors current position is less then the target
+//            else if( rightLifter.getCurrentPosition() < target){
+//                //If the current position is more than the target, set motor power to 60%
+//                // RightLiftMotor.setPower(0.5);
+//                rightLifter.setPower(0.15);
+//
+//            }
+//        }
+//    }
+//    public void liftTestLeft(int target){
+//        //Sets the new target position for the glyph lifter
+//        // RightLiftMotor.setTargetPosition(target);
+//        leftLifter.setTargetPosition(target);
+//        //Turns on RUN_TO_POSITION
+//        // RightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        leftLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        //If statement that ask if the motor is busy
+//        if( leftLifter.isBusy()){
+//            //If statement that checks if the motors current position is more then the target
+//            if( leftLifter.getCurrentPosition() > target){
+//                //If the current position is more than the target, set motor power to 40%
+//                // RightLiftMotor.setPower(0.45);
+//                leftLifter.setPower(0.4);
+//            }
+//            //If statement that checks if the motors current position is less then the target
+//            else if( leftLifter.getCurrentPosition() < target){
+//                //If the current position is more than the target, set motor power to 60%
+//                // RightLiftMotor.setPower(0.5);
+//                leftLifter.setPower(0.15);
+//            }
+//        }
+//    }
 }

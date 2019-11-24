@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 import java.util.Locale;
 
-@Autonomous(name="Rover Ruckus Hanger Deploy", group="Rover Ruckus")
-public class Auto_hanger_Deploy extends LinearOpMode {
+@Autonomous(name="Rover Ruckus Hanger Park", group="Rover Ruckus")
+public class Auto_hanger_carter_park extends LinearOpMode {
     Auto_Library_Rover_Ruckus autoLibrary = new Auto_Library_Rover_Ruckus();
     TeleOp_Library_Rover_Ruckus TeleOp = new TeleOp_Library_Rover_Ruckus();
 
@@ -32,6 +32,19 @@ public class Auto_hanger_Deploy extends LinearOpMode {
             TeleOp.hangerUp();
             sleep(1000);
             gyroTurn(0.6, -35, 0.011);
+            sleep(500);
+            encoderDrive(0.6, 8,8, 5);
+            sleep(500);
+            gyroTurn(0.6, 0, 0.011);
+            sleep(500);
+            encoderDrive(0.6, 20, 20, 5);
+            sleep(500);
+            TeleOp.right_Intake.setPower(-0.6);
+            TeleOp.left_Intake.setPower(-0.6);
+            sleep(1000);
+            TeleOp.left_Intake.setPower(0.0);
+            TeleOp.right_Intake.setPower(0.0);
+            stop();
         }
     }
     public void encoderDrive( double speed,

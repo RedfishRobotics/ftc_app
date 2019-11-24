@@ -4,12 +4,16 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="Latching TeleOp Test Elevator", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class Latching_Teleop_Dirve_Elevator extends LinearOpMode {
 
-    TeleOp_Library teleOpLibrary = new TeleOp_Library();
+//    TeleOp_Library teleOpLibrary = new TeleOp_Library();
+    public DigitalChannel Beam_break = null;
+    public Servo servo = null;
 
     private static final double[] Latch = new double[]{0, 1};
     private int currentLatchIndex;
@@ -17,12 +21,26 @@ public class Latching_Teleop_Dirve_Elevator extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        teleOpLibrary.init(hardwareMap);
+//        teleOpLibrary.init(hardwareMap);
+        Beam_break = hardwareMap.get(DigitalChannel.class, "Beam_break");
+        servo = hardwareMap.get(Servo.class, "Servo");
         this.currentLatchIndex = 0;
         this.yPressedLast = false;
 
         waitForStart();
         while (opModeIsActive()) {
+//            telemetry.addLine("State: " + Beam_break.getState());
+//            telemetry.update();
+
+            if(Beam_break.getState() == true){
+                servo.setPosition(0.1);
+                telemetry.addLine("Closed");
+                telemetry.update();
+            }else{
+                servo.setPosition(0.9);
+                telemetry.addLine("Opened");
+                telemetry.update();
+            }
 //            final boolean yPressed = this.gamepad1.y;
 //            if (yPressed && !this.yPressedLast)
 //                this.currentLatchIndex = (this.currentLatchIndex + 1) % Latch.length;
@@ -97,14 +115,14 @@ public class Latching_Teleop_Dirve_Elevator extends LinearOpMode {
 //                teleOpLibrary.relicReel.setPower(gamepad2.right_stick_y / 4);
 //            } else {
 //                teleOpLibrary.relicReel.setPower(0);
-//            }
-            teleOpLibrary.RightLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            teleOpLibrary.LeftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            teleOpLibrary.RightLiftMotor.setPower(-gamepad1.left_stick_y);
-            teleOpLibrary.LeftLiftMotor.setPower(-gamepad1.left_stick_y);
-
-            telemetry.addLine("Right Lift Motor: " + teleOpLibrary.RightLiftMotor.getCurrentPosition());
-            telemetry.addLine("Left Lift Motor: " + teleOpLibrary.LeftLiftMotor.getCurrentPosition());
+////            }
+//            teleOpLibrary.RightLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//            teleOpLibrary.LeftLiftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//            teleOpLibrary.RightLiftMotor.setPower(-gamepad1.left_stick_y);
+//            teleOpLibrary.LeftLiftMotor.setPower(-gamepad1.left_stick_y);
+//
+//            telemetry.addLine("Right Lift Motor: " + teleOpLibrary.RightLiftMotor.getCurrentPosition());
+//            telemetry.addLine("Left Lift Motor: " + teleOpLibrary.LeftLiftMotor.getCurrentPosition());
             telemetry.update();
         }
     }
